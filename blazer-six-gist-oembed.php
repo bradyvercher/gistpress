@@ -38,10 +38,13 @@ add_action( 'plugins_loaded', array( 'Blazer_Six_Gist_oEmbed', 'setup' ) );
 
 class Blazer_Six_Gist_oEmbed {
 	function setup() {
+		add_action( 'init', array( __CLASS__, 'init' ) );
 		wp_embed_register_handler( 'gist', '#(https://gist\.github\.com/([a-z0-9]+))(?:\#file_(.*))?#i', array( __CLASS__, 'wp_embed_handler' ) );
-		wp_register_style( 'github-gist', 'https://gist.github.com/stylesheets/gist/embed.css' );
-		
 		add_shortcode( 'gist', array( __CLASS__, 'shortcode' ) );
+	}
+	
+	function init() {
+		wp_register_style( 'github-gist', 'https://gist.github.com/stylesheets/gist/embed.css' );	
 	}
 	
 	/**
@@ -105,8 +108,11 @@ class Blazer_Six_Gist_oEmbed {
 		
 		extract( $attr, EXTR_SKIP );
 		
-		if ( ! empty( $id ) )
-			$json_url = 'http://gist.github.com/' . $id . '.json';
+		$url = $content;
+		if ( ! empty( $id ) ) {
+			$url = 'http://gist.github.com/' . $id;
+			$json_url = $url . '.json';
+		}
 		
 		// The Gist ID and desired file are picked up from the URL if not passed as shortcode attributes
 		if ( ! empty( $content ) && ( ! isset( $json_url ) || ! isset( $file ) ) ) {
