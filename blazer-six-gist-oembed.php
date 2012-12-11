@@ -1,63 +1,86 @@
 <?php
-/*
-Plugin Name: Blazer Six Gist oEmbed
-Version: 1.0
-Plugin URI: https://gist.github.com/3031280
-Description: Gist oEmbed and shortcode support with caching.
-Author: Blazer Six, Inc.
-Author URI: http://www.blazersix.com/
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+/**
+ * Plugin Name: Blazer Six Gist oEmbed
+ * Plugin URI: https://github.com/bradyvercher/wp-blazer-six-gist-oembed
+ * Description: Gist oEmbed and shortcode support with caching.
+ * Version: 1.0.1
+ * Author: Blazer Six, Inc.
+ * Author URI: http://www.blazersix.com/
+ * License: GPLv2 or later
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc., 59
+ * Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package Blazer_Six_Gist_oEmbed
+ * @author Brady Vercher <brady@blazersix.com>
+ * @copyright Copyright (c) 2012, Blazer Six, Inc.
+ * @license http://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * @todo Add support in the shortcode for returning specific line numbers.
+ * @todo Feed support: link directly to post, directly to Gist, or wrap in iframe?
+ */
 
-Alternatives
-------------
-* oEmbed Gist by Takayuki Miyauchi - http://wordpress.org/extend/plugins/oembed-gist/
-* Pretty Cacheable Gists by Zach Tollman - https://gist.github.com/2864688
-* Spotify, Rdio, and Gist embeds for WordPress by Alex Mills - https://gist.github.com/2417309
+/**
+ * Load the plugin when plugins are loaded.
+ */
+add_action( 'plugins_loaded', array( 'Blazer_Six_Gist_oEmbed', 'load' ) );
 
-------------------------------------------------------------------------
-Copyright 2012  Blazer Six, Inc.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-
-add_action( 'plugins_loaded', array( 'Blazer_Six_Gist_oEmbed', 'setup' ) );
-
+/**
+ * The main plugin class.
+ *
+ * @since 1.0
+ */
 class Blazer_Six_Gist_oEmbed {
-	function setup() {
+	/**
+	 * Set up the plugin.
+	 *
+	 * Adds a [gist] shortcode to do the bulk of the heavylifting. An embed
+	 * handler is registered to mimic oEmbed functionality, but it relies on
+	 * the shortcode for processing.
+	 *
+	 * @since 1.0
+	 */
+	public static function load() {
 		add_action( 'init', array( __CLASS__, 'init' ) );
 		wp_embed_register_handler( 'gist', '#(https://gist\.github\.com/([a-z0-9]+))(?:\#file_(.*))?#i', array( __CLASS__, 'wp_embed_handler' ) );
 		add_shortcode( 'gist', array( __CLASS__, 'shortcode' ) );
 	}
 	
-	function init() {
+	/**
+	 * Register the Gist stylesheet so it will only be embedded once.
+	 *
+	 * @since 1.0
+	 */
+	public static function init() {
 		wp_register_style( 'github-gist', 'https://gist.github.com/stylesheets/gist/embed.css' );	
 	}
 	
 	/**
-	 * WP Embed Handler
+	 * WP embed handler to generate a shortcode string from a Gist URL.
 	 *
 	 * Parses Gist URLs for oEmbed support. Returns the value as a shortcode
-	 * string to let the shortcode method handle processing. The value returned
-	 * also doesn't have wpautop() applied, which is nice for source code.
+	 * string to let the shortcode method handle processing. The value
+	 * returned also doesn't have wpautop() applied, which is a must for
+	 * source code.
 	 *
 	 * If a file is specified in the hash of the URL for a multi-file Gist, it
 	 * will be picked up and only the single file will be displayed.
+	 *
+	 * @since 1.0
 	 */
-	function wp_embed_handler( $matches, $attr, $url, $rawattr ) {
+	public static function wp_embed_handler( $matches, $attr, $url, $rawattr ) {
 		$shortcode = '[gist';
 		
 		if ( isset( $matches[2] ) && ! empty( $matches[2] ) )
@@ -66,39 +89,48 @@ class Blazer_Six_Gist_oEmbed {
 		if ( isset( $matches[3] ) && ! empty( $matches[3] ) )
 			$shortcode .= ' file="' . esc_attr( $matches[3] ) . '"';
 		
-		$shortcode .= ']' . $url . '[/gist]';
+		$shortcode .= ']';
 		
-		return $shortcode; // Allows html to be returned after wpautop
+		return $shortcode; // Allows html to be returned after wpautop().
 	}
 	
 	/**
-	 * Gist Shortcode
+	 * Gist shortcode.
 	 *
-	 * Works with private Gists, too (I think).
+	 * Cache functionality mimics WP_Embed so the cache is invalidated
+	 * whenever a post is saved. @see WP_Embed->delete_oembed_caches()
 	 *
-	 * Cache functionality mimics WP_Embed so the cache is invalidated whenever
-	 * a post is saved. @see WP_Embed->delete_oembed_caches()
+	 * GitHub treats filenames with dashes oddly. If you name a Gist file with
+	 * a dash, it will be replaced with an underscore in the link next to the
+	 * filename, however, using the replaced version will cause the JSON
+	 * endpoint to return all files in the Gist since it doesn't recognize the
+	 * file. Just revert the underscore to a dash for oEmbed or the shortcode
+	 * to work properly. Or avoid dashes in Gist filenames altogether.
 	 *
 	 * The $show_line_numbers attribute assumes custom CSS has been added. If
-	 * the embedded stylehseet is being used, this value won't do anything aside
-	 * from add a class.
+	 * the embedded stylehseet is being used, this value won't do anything
+	 * aside from add a class.
 	 *
 	 * If $embed_stylesheet is set to true, the external stylesheet will be
 	 * enqueued and output in the footer. If that's too late, set the default
 	 * $embed_stylesheet value to false and enqueue the 'github-gist' style
 	 * before wp_head.
 	 *
+	 * Works with private Gists, too.
+	 *
 	 * @see WP_Embed->shortcode()
+	 *
+	 * @since 1.0
 	 */
-	function shortcode( $attr, $content = null ) {
+	public static function shortcode( $attr, $content = null ) {
 		global $post, $wp_embed;
 		
 		$defaults = apply_filters( 'blazersix_gist_shortcode_defaults', array(
-			'embed_stylesheet' => apply_filters( 'blazersix_gist_embed_stylesheet_default', true ),
-			'id' => '',
-			'file' => '',
+			'embed_stylesheet'  => apply_filters( 'blazersix_gist_embed_stylesheet_default', true ),
+			'id'                => '',
+			'file'              => '',
 			'show_line_numbers' => true,
-			'show_meta' => true
+			'show_meta'         => true
 		) );
 		
 		$attr = shortcode_atts( $defaults, $attr );
@@ -110,61 +142,73 @@ class Blazer_Six_Gist_oEmbed {
 		
 		$url = $content;
 		if ( ! empty( $id ) ) {
-			$url = 'http://gist.github.com/' . $id;
+			$url = 'https://gist.github.com/' . $id;
 			$json_url = $url . '.json';
 		}
 		
-		// The Gist ID and desired file are picked up from the URL if not passed as shortcode attributes
+		// The Gist ID and desired file are picked up from the URL if not passed as shortcode attributes.
 		if ( ! empty( $content ) && ( ! isset( $json_url ) || ! isset( $file ) ) ) {
-			preg_match( '#(https://gist\.github\.com/([a-z0-9]+))(?:\#file_(.*))?#i', $content, $matches );
+			preg_match( '#(https?://gist\.github\.com/([a-z0-9]+))(?:\#file_(.*))?#i', $content, $matches );
 			
-			if ( ! isset( $json_url ) && isset( $matches[1] ) && ! empty( $matches[1] ) )
+			if ( ! isset( $json_url ) && ! empty( $matches[1] ) ) {
 				$json_url = $matches[1] . '.json';
+			}
 			
-			if ( ! isset( $file ) && isset( $matches[3] ) && ! empty( $matches[3] ) )
+			if ( ! isset( $file ) && ! empty( $matches[3] ) ) {
 				$file = $matches[3];
+			}
 		}
 		
-		if ( ! isset( $json_url ) )
+		// Bail if the JSON endpoint couldn't be determined.
+		if ( ! isset( $json_url ) ) {
 			return '';
+		}
 		
-		if ( ! empty( $file ) )
+		// Add a specific file from a Gist to the URL.
+		if ( ! empty( $file ) ) {
 			$json_url = add_query_arg( 'file', urlencode( $file ), $json_url );
+		}
 		
 		if ( $json_url && isset( $post->ID ) ) {
-			// Check for a cached result (stored in the post meta)
+			// Check for a cached result (stored in the post meta).
 			$cachekey = '_oembed_' . md5( $json_url );
 			$html = get_post_meta( $post->ID, $cachekey, true );
-	
-			// Failures are cached
-			if ( '{{unknown}}' === $html )
-				return $wp_embed->maybe_make_link( $url );
 			
-			// Retrieve html from Gist json endpoint
+			// Failures are cached, too. Update the post to attempt to fetch a new copy.
+			if ( '{{unknown}}' === $html ) {
+				return $wp_embed->maybe_make_link( $url );
+			}
+			
+			// Retrieve html from Gist JSON endpoint.
 			if ( empty( $html ) ) {
 				$response = wp_remote_get( $json_url, array( 'sslverify' => false ) );
+				
 				if ( 200 == wp_remote_retrieve_response_code( $response ) ) {
 					$json = json_decode( wp_remote_retrieve_body( $response ) );
-					if ( isset( $json->div ) && ! empty( $json->div ) ) {
+					if ( ! empty( $json->div ) ) {
 						$html = $json->div;
 					}
 				}
-		
-				// Cache the result
-				$cache = ( $html ) ? $html : '{{unknown}}';
+				
+				// Cache the result.
+				// @link http://core.trac.wordpress.org/ticket/21767
+				$cache = ( $html ) ? addslashes( $html ) : '{{unknown}}';
 				update_post_meta( $post->ID, $cachekey, $cache );
 			}
-	
-			// If there was a result, return it
+			
+			// If there was a result, return it.
 			if ( $html ) {
-				if ( $show_line_numbers )
+				if ( $show_line_numbers ) {
 					$html = str_replace( 'class="highlight"', 'class="highlight show-line-numbers"', $html );
+				}
 				
-				if ( false === $show_meta )
+				if ( false === $show_meta ) {
 					$html = preg_replace( '#<div class="gist-meta">.*?</div>#ms', '', $html );
+				}
 				
-				if ( $embed_stylesheet )
-					wp_enqueue_style( 'github-gist' ); // External stylesheet; line numbers won't work
+				if ( $embed_stylesheet ) {
+					wp_enqueue_style( 'github-gist' ); // External stylesheet; line numbers won't work.
+				}
 				
 				return apply_filters( 'blazersix_gist_embed_html', $html, $url, $attr, $post->ID );
 			}

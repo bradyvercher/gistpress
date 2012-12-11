@@ -2,8 +2,8 @@
 Contributors: blazersix, bradyvercher
 Tags: gist, github, oembed
 Requires at least: 3.4
-Tested up to: 3.4.1
-Stable tag: 1.0
+Tested up to: 3.5
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,10 +21,14 @@ Installing Blazer Six Gist oEmbed is just like installing most other plugins. [C
 
 == Frequently Asked Questions ==
 
-= How get updates to my Gist to show up? =
+= How do I get updates to my Gist to show up? =
+
 Gists are cached when they're first loaded. Update the post to invalidate the cache and fetch any changes.
 
 == Changelog ==
+
+= 1.0.1 =
+* Fixed issue with slashes being stripped by update_metadata(). http://core.trac.wordpress.org/ticket/21767
 
 = 1.0 =
 * Initial release.
