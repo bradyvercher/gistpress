@@ -9,26 +9,13 @@
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc., 59
- * Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  * @package Blazer_Six_Gist_oEmbed
  * @author Brady Vercher <brady@blazersix.com>
  * @copyright Copyright (c) 2012, Blazer Six, Inc.
- * @license http://www.gnu.org/licenses/gpl-2.0.html
+ * @license GPL-2.0+
  *
  * @todo Add support in the shortcode for returning specific line numbers.
+ * @todo Shortcode for highlighting specific lines.
  * @todo Feed support: link directly to post, directly to Gist, or wrap in iframe?
  */
 
@@ -40,7 +27,7 @@ add_action( 'plugins_loaded', array( 'Blazer_Six_Gist_oEmbed', 'load' ) );
 /**
  * The main plugin class.
  *
- * @since 1.0
+ * @since 1.0.0
  */
 class Blazer_Six_Gist_oEmbed {
 	/**
@@ -50,7 +37,7 @@ class Blazer_Six_Gist_oEmbed {
 	 * handler is registered to mimic oEmbed functionality, but it relies on
 	 * the shortcode for processing.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public static function load() {
 		add_action( 'init', array( __CLASS__, 'init' ) );
@@ -61,7 +48,7 @@ class Blazer_Six_Gist_oEmbed {
 	/**
 	 * Register the Gist stylesheet so it will only be embedded once.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public static function init() {
 		wp_register_style( 'github-gist', 'https://gist.github.com/stylesheets/gist/embed.css' );	
@@ -78,16 +65,18 @@ class Blazer_Six_Gist_oEmbed {
 	 * If a file is specified in the hash of the URL for a multi-file Gist, it
 	 * will be picked up and only the single file will be displayed.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public static function wp_embed_handler( $matches, $attr, $url, $rawattr ) {
 		$shortcode = '[gist';
 		
-		if ( isset( $matches[2] ) && ! empty( $matches[2] ) )
+		if ( isset( $matches[2] ) && ! empty( $matches[2] ) ) {
 			$shortcode .= ' id="' . esc_attr( $matches[2] ) . '"';
+		}
 		
-		if ( isset( $matches[3] ) && ! empty( $matches[3] ) )
+		if ( isset( $matches[3] ) && ! empty( $matches[3] ) ) {
 			$shortcode .= ' file="' . esc_attr( $matches[3] ) . '"';
+		}
 		
 		$shortcode .= ']';
 		
@@ -120,7 +109,7 @@ class Blazer_Six_Gist_oEmbed {
 	 *
 	 * @see WP_Embed->shortcode()
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public static function shortcode( $attr, $content = null ) {
 		global $post, $wp_embed;
@@ -215,4 +204,3 @@ class Blazer_Six_Gist_oEmbed {
 		}
 	}
 }
-?>
