@@ -18,8 +18,7 @@
  * @todo Attribute for highlighting specific lines.
  * @todo Feed support: link directly to post, directly to Gist, or wrap in iframe?
  * @todo Add some debugging features.
- * @todo Determine why self closing shortcodes without the slash don't work.
- * @todo Add an uninstall file to removing transients and post meta.
+ * @todo Add an uninstall file to remove transients and post meta.
  */
 
 /**
@@ -95,7 +94,7 @@ class Blazer_Six_Gist_oEmbed {
 			$shortcode .= ' file="' . esc_attr( $matches[3] ) . '"';
 		}
 		
-		$shortcode .= '/]'; // Self-closing shortcode.
+		$shortcode .= ']';
 		
 		return $shortcode;
 	}
@@ -119,7 +118,7 @@ class Blazer_Six_Gist_oEmbed {
 	 *
 	 * @since 1.0.0
 	 */
-	public static function shortcode( $attr, $content = null ) {
+	public static function shortcode( $attr ) {
 		global $post, $wp_embed;
 		
 		$defaults = apply_filters( 'blazersix_gist_shortcode_defaults', array(
@@ -145,25 +144,9 @@ class Blazer_Six_Gist_oEmbed {
 		
 		extract( $attr, EXTR_SKIP );
 		
-		$url = $content;
 		if ( ! empty( $id ) ) {
 			$url = 'https://gist.github.com/' . $id;
 			$json_url = $url . '.json';
-		}
-		
-		// The Gist ID is picked up from the URL if not passed as a shortcode attribute.
-		if ( ! empty( $content ) && ( ! isset( $json_url ) || ! isset( $file ) ) ) {
-			// File matching is maintained for backward compatibility, but won't work for the new Gist "bookmark" URLs.
-			preg_match( '#(https?://gist\.github\.com/([a-z0-9]+))(?:\#file_(.*))?#i', $content, $matches );
-			
-			if ( ! isset( $json_url ) && ! empty( $matches[1] ) ) {
-				$json_url = $matches[1] . '.json';
-			}
-			
-			// For backward compatibility.
-			if ( empty( $file ) && ! empty( $matches[3] ) ) {
-				$file = $matches[3];
-			}
 		}
 		
 		// Bail if the JSON endpoint couldn't be determined.
