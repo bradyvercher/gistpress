@@ -62,7 +62,7 @@ class Blazer_Six_Gist_oEmbed_Log {
 	/**
 	 * Detailed debug information.
 	 *
-	 * @since 1.2.0
+	 * @since 1.1.0
 	 *
 	 * @uses Blazer_Six_Gist_oEmbed_Log::log()
 	 *
@@ -83,7 +83,7 @@ class Blazer_Six_Gist_oEmbed_Log {
 	 * Note that at this point in time, we don't actually do anything with the
 	 * $level argument.
 	 *
-	 * @since 1.2.0
+	 * @since 1.1.0
 	 *
 	 * @param mixed  $level
 	 * @param string $message
@@ -101,7 +101,7 @@ class Blazer_Six_Gist_oEmbed_Log {
 	 *
 	 * Under PSR-1, this method would be called getLogs().
 	 *
-	 * @since 1.2.0
+	 * @since 1.1.0
 	 *
 	 * @return array
 	 */

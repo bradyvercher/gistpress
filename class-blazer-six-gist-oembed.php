@@ -41,7 +41,7 @@ class Blazer_Six_Gist_oEmbed {
 	 *
 	 * @see https://github.com/php-fig/log/blob/master/Psr/Log/LoggerAwareInterface.php
 	 *
-	 * @since 1.2.0
+	 * @since 1.1.0
 	 *
 	 * @param object $logger
 	 */
@@ -54,7 +54,7 @@ class Blazer_Six_Gist_oEmbed {
 	 *
 	 * Under PSR-1, this method would be called getLogger().
 	 *
-	 * @since 1.2.0
+	 * @since 1.1.0
 	 *
 	 * @return object
 	 */

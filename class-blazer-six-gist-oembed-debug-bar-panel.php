@@ -24,7 +24,7 @@ class Blazer_Six_Gist_oEmbed_Debug_Bar_Panel extends Debug_Bar_Panel {
 	/**
 	 * Assign properties, and call parent constructor.
 	 *
-	 * @since 1.2.0
+	 * @since 1.1.0
 	 *
 	 * @param object $logger
 	 */
