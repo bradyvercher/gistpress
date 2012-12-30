@@ -17,13 +17,15 @@
  */
 
 // Instantiate main plugin class
-if ( ! class_exists( 'Blazer_Six_Gist_oEmbed' ) )
+if ( ! class_exists( 'Blazer_Six_Gist_oEmbed' ) ) {
 	require( plugin_dir_path( __FILE__ ) . 'class-blazer-six-gist-oembed.php' );
+}
 $gist_oembed = new Blazer_Six_Gist_oEmbed;
 
 // Instantiate logging class
-if ( ! class_exists( 'Blazer_Six_Gist_oEmbed_Log' ) )
+if ( ! class_exists( 'Blazer_Six_Gist_oEmbed_Log' ) ) {
 	require( plugin_dir_path( __FILE__ ) . 'class-blazer-six-gist-oembed-log.php' );
+}
 $gist_oembed_logger = new Blazer_Six_Gist_oEmbed_Log;
 
 add_action( 'init', 'blazer_six_gist_oembed_localization' );
@@ -68,8 +70,9 @@ add_action( 'plugins_loaded', 'blazer_six_gist_oembed_add_debug_bar_panel_suppor
  * @return null Return early if Debug Bar plugin not enabled.
  */
 function blazer_six_gist_oembed_add_debug_bar_panel_support() {
-	if ( ! class_exists( 'Debug_Bar' ) || is_admin() || ! is_admin_bar_showing() )
+	if ( ! class_exists( 'Debug_Bar' ) || is_admin() || ! is_admin_bar_showing() ) {
 		return;
+	}
 
 	add_filter( 'debug_bar_panels', 'blazer_six_gist_oembed_add_debug_bar_panel' );
 }
@@ -84,8 +87,9 @@ function blazer_six_gist_oembed_add_debug_bar_panel_support() {
 function blazer_six_gist_oembed_add_debug_bar_panel( array $panels ) {
 	global $gist_oembed_logger;
 //	wp_die('panel being added');
-	if ( ! class_exists( 'Blazer_Six_Gist_oEmbed_Debug_Bar_Panel' ) )
+	if ( ! class_exists( 'Blazer_Six_Gist_oEmbed_Debug_Bar_Panel' ) ) {
 		require( plugin_dir_path( __FILE__ ) . 'class-blazer-six-gist-oembed-debug-bar-panel.php' );
+	}
 	$panels[] = new Blazer_Six_Gist_oEmbed_Debug_Bar_Panel( $gist_oembed_logger );
 	return $panels;
 }

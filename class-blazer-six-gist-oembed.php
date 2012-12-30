@@ -269,8 +269,9 @@ class Blazer_Six_Gist_oEmbed {
 				unset( $highlight[ $index ] );
 
 				$range = array_map( 'trim', explode( '-', $num ) );
-				foreach ( range( $range[0], $range[1] ) as $line )
+				foreach ( range( $range[0], $range[1] ) as $line ) {
 					array_push($highlight, $line);
+				}
 			}
 		}
 		return array_unique( $highlight );
@@ -440,7 +441,7 @@ class Blazer_Six_Gist_oEmbed {
 		$lines_pattern = '#(<td class="line_data"[^>]+>)(.+?)</td>#s';
 		preg_match( $lines_pattern, $html, $lines_matches );
 
-		if( ! empty( $lines_matches[2] ) ) {
+		if ( ! empty( $lines_matches[2] ) ) {
 			// Restrict the line number display if a range has been specified.
 			if ( $args['show_line_numbers'] && $args['lines']['min'] && $args['lines']['max'] ) {
 				$html = $this->limit_gist_line_numbers( $html, $args['lines'] );
