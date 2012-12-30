@@ -1,86 +1,84 @@
 <?php
 /**
+ * Blazer Six Gist oEmbed
+ *
+ * @package BlazerSix\GistoEmbed
+ * @author Brady Vercher <brady@blazersix.com>
+ * @author Gary Jones <gary@garyjones.co.uk>
+ * @copyright Copyright (c) 2012, Blazer Six, Inc.
+ * @license GPL-2.0+
+ */
+
+/**
  * Class for displaying a custom panel on the debug bar with information about
  * Gist shortcodes used in a post.
  *
- * @since 1.1.0
+ * @package BlazerSix\GistoEmbed
+ * @author Brady Vercher <brady@blazersix.com>
+ * @author Gary Jones <gary@garyjones.co.uk>
  */
 class Blazer_Six_Gist_oEmbed_Debug_Bar_Panel extends Debug_Bar_Panel {
+	/** @var object Logger object. */
+	protected $logger;
+
+	/**
+	 * Assign properties, and call parent constructor.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param object $logger
+	 */
+	public function __construct( $logger ) {
+		$this->logger = $logger;
+		parent::__construct();
+	}
+
 	/**
 	 * Initialize the panel and set its title.
 	 *
 	 * @since 1.1.0
 	 */
-	public function init(){
+	public function init() {
 		$this->title( __( 'Gist oEmbed', 'blazersix-gist-oembed' ) );
 	}
 
 	/**
-	 * Make the panel visibile.
+	 * Make the panel visible, only if there is something to display.
 	 *
 	 * @since 1.1.0
 	 */
 	public function prerender() {
-		$this->set_visible( true );
+		$logs = $this->logger->get_logs();
+		$this->set_visible( ! empty( $logs ) );
 	}
 
 	/**
-	 * Requests the debug log from the Gist oEmbed class and displays it in
-	 * the custom debug bar panel.
+	 * Request the log from the logger class and display it in the custom debug
+	 * bar panel.
 	 *
 	 * @since 1.1.0
 	 */
 	public function render() {
-		$gists = Blazer_Six_Gist_oEmbed::instance();
-		
-		$log = $gists->get_debug_log();
-		
-		foreach ( $log as $gist ) {
+		$logs = $this->logger->get_logs();
+		foreach ( $logs as $log_id => $gist ) {
 			echo '<div class="b6go-gist-debug">';
-				foreach ( $gist as $entry ) {
-					if ( is_scalar( $entry ) ) {
-						echo ( false === strpos( $entry, '<table' ) ) ? wpautop ( $entry ) : $entry;
-					} elseif ( is_array( $entry ) ) {
-						?>
-						<table>
-							<thead>
-								<tr>
-									<th><?php _e( 'Attribute', 'blazersix-gist-oembed' ); ?></th>
-									<th><?php _e( 'Value', 'blazersix-gist-oembed' ); ?></th>
-								</tr>
-							</thead>
-							<tbody>
-								<?php foreach ( $entry as $key => $value ) : ?>
-									<tr>
-										<th><?php echo esc_html( $key ); ?></th>
-										<td><?php echo ( is_scalar( $value ) ) ? $value : print_r( $value, true ); ?></td>
-									</tr>
-								<?php endforeach; ?>
-							</tbody>
-						</table>
-						<?php
-					}
-				}
+			foreach ( $gist as $entry ) {
+				// Don't wpautop tabular data, as it adds <br> between line number spans.
+				echo ( false === strpos( $entry['message'], '<table' ) ) ? wpautop ( $entry['message'] ) : $entry['message'];
+			}
 			echo '</div>';
 		}
 		?>
 		<style type="text/css">
-		.b6go-gist-debug { margin: 0 0 20px 0; padding: 10px; background: #e8e8e8;}
-		.b6go-gist-debug p { margin: 0 0 10px 0;}
-		.b6go-gist-debug p.source { padding: 5px; background: #ffffdd;}
-		.b6go-gist-debug table { margin: 0 0 10px 0;}
-		.b6go-gist-debug td { padding: 3px 5px;}
-		.b6go-gist-debug th { padding: 3px 5px; font-weight: bold;}
-		.b6go-gist-debug thead th { background: #dfdfdf; border-bottom: 1px solid #ccc;}
-		.b6go-gist-debug .gist table { margin: 0;}
-		#querylist .b6go-gist-debug .gist .gist-file .gist-data .line_data { padding: 0;}
-		#querylist .b6go-gist-debug .gist .gist-file .gist-data .line_data pre { overflow: auto; margin: 0; padding: 0;
-			white-space: pre;
+		.b6go-gist-debug { margin: 2em 0; padding: 10px; background: #e8e8e8;}
+		#querylist .b6go-gist-debug .gist .gist-file .gist-data .line_data pre {
+			overflow: auto;
 			word-wrap: normal;
 			-moz-tab-size: 4;
 			-o-tab-size: 4;
 			tab-size: 4;}
-		#querylist .b6go-gist-debug .gist .gist-file .gist-data .line_data .line { padding: 0 0.5em;}
+		.b6go-gist-debug .gist .gist-file .gist-data .line_numbers span {font-size: 12px;}
+		#querylist .b6go-gist-debug h2 {border: 0; float: none; font-size: 22px; text-align: left; margin: 0 !important; padding-left: 0;}
 		</style>
 		<?php
 	}
