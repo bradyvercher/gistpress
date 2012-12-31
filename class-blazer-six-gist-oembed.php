@@ -79,7 +79,7 @@ class Blazer_Six_Gist_oEmbed {
 		wp_embed_register_handler( 'gist', '#(https://gist\.github\.com/([a-z0-9]+))(?:\#file_(.*))?#i', array( $this, 'wp_embed_handler' ) );
 		add_shortcode( 'gist', array( $this, 'shortcode' ) );
 
-		add_action( 'init', array( $this, 'style' ) );
+		add_action( 'init', array( $this, 'style' ), 15 );
 		add_action( 'post_updated', array( $this, 'delete_gist_transients' ), 10, 3 );
 	}
 
