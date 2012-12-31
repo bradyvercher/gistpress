@@ -163,7 +163,6 @@ class Blazer_Six_Gist_oEmbed {
 			'blazersix_gist_shortcode_defaults',
 			array(
 				'embed_stylesheet'  => apply_filters( 'blazersix_gist_embed_stylesheet_default', true ),
-				'fetch'             => false,
 				'file'              => '',
 				'highlight'         => array(),
 				'highlight_color'   => apply_filters( 'blazersix_gist_embed_highlight_color', '#ffffcc' ),
@@ -182,10 +181,6 @@ class Blazer_Six_Gist_oEmbed {
 		$attr['show_meta']         = $this->shortcode_bool( $attr['show_meta'] );
 		$attr['highlight']         = $this->parse_highlight_arg( $attr['highlight'] );
 		$attr['lines']             = $this->parse_line_number_arg( $attr['lines'] );
-
-		// Don't use the fetch attribute in the shortcode hash.
-		$fetch = $this->shortcode_bool( $attr['fetch'] );
-		unset( $attr['fetch'] );
 
 		$shortcode_hash = $this->shortcode_hash( 'gist', $attr );
 
@@ -209,7 +204,7 @@ class Blazer_Six_Gist_oEmbed {
 		$json_url = $url . '.json';
 
 		if ( isset( $post->ID ) ) {
-			$html = $this->get_gist_html( $json_url, $attr, $fetch );
+			$html = $this->get_gist_html( $json_url, $attr );
 
 			if ( '{{unknown}}' === $html ) {
 				return make_clickable( $url );
@@ -343,7 +338,7 @@ class Blazer_Six_Gist_oEmbed {
 	 *
 	 * @return string Gist HTML or {{unknown}} if it couldn't be determined.
 	 */
-	public function get_gist_html( $url, $args, $fetch = false ) {
+	public function get_gist_html( $url, $args ) {
 		global $post;
 
 		// Add a specific file from a Gist to the URL.
