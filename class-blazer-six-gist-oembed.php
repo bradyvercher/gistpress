@@ -8,7 +8,6 @@
  * @copyright Copyright (c) 2012, Blazer Six, Inc.
  * @license GPL-2.0+
  *
- * @todo Feed support: link directly to post, directly to Gist, or wrap in iframe?
  * @todo Cache the style sheet locally.
  */
 
