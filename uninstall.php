@@ -5,7 +5,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 global $wpdb;
 
-delete_option( 'blazersix_gist_embed_stylesheet' );
+delete_option( 'blazersix_gist_oembed_stylesheet' );
 
 // Delete post meta.
 $post_metas = $wpdb->get_results( "SELECT post_id, meta_key FROM $wpdb->postmeta WHERE meta_key LIKE '_gist_raw_%'" );

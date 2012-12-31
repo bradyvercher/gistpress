@@ -89,7 +89,7 @@ class Blazer_Six_Gist_oEmbed {
 	 * @since 1.0.0
 	 */
 	public function style() {
-		wp_register_style( 'github-gist', get_option( 'blazersix_gist_embed_stylesheet' ) );
+		wp_register_style( 'github-gist', get_option( 'blazersix_gist_oembed_stylesheet' ) );
 	}
 
 	/**
@@ -163,10 +163,10 @@ class Blazer_Six_Gist_oEmbed {
 		$defaults = apply_filters(
 			'blazersix_gist_shortcode_defaults',
 			array(
-				'embed_stylesheet'  => apply_filters( 'blazersix_gist_embed_stylesheet_default', true ),
+				'embed_stylesheet'  => apply_filters( 'blazersix_gist_oembed_stylesheet_default', true ),
 				'file'              => '',
 				'highlight'         => array(),
-				'highlight_color'   => apply_filters( 'blazersix_gist_embed_highlight_color', '#ffffcc' ),
+				'highlight_color'   => apply_filters( 'blazersix_gist_oembed_highlight_color', '#ffffcc' ),
 				'id'                => '',
 				'lines'             => '',
 				'lines_start'       => '',
@@ -198,7 +198,7 @@ class Blazer_Six_Gist_oEmbed {
 
 		// Bail if the ID is not set.
 		if ( empty( $attr['id'] ) ) {
-			$this->debug_log( __( 'Shortcode did not have a required id attribute.', 'blazer_six_gist_oembed' ), $shortcode_hash );
+			$this->debug_log( __( 'Shortcode did not have a required id attribute.', 'blazersix-gist-oembed' ), $shortcode_hash );
 			return '';
 		}
 
@@ -223,10 +223,10 @@ class Blazer_Six_Gist_oEmbed {
 					wp_enqueue_style( 'github-gist' );
 				}
 
-				$html = apply_filters( 'blazersix_gist_embed_html', $html, $url, $attr, $post->ID );
+				$html = apply_filters( 'blazersix_gist_oembed_html', $html, $url, $attr, $post->ID );
 
 				foreach ( $attr as $key => $value ) {
-					$message  = '<strong>' . $key . __(' (shortcode attribute)', 'blazer_six_gist_oembed') . ':</strong> ';
+					$message  = '<strong>' . $key . __(' (shortcode attribute)', 'blazersix-gist-oembed') . ':</strong> ';
 					$message .= is_scalar( $value ) ? $value : print_r( $value, true );
 					$this->debug_log( $message, $shortcode_hash );
 				}
@@ -385,7 +385,7 @@ class Blazer_Six_Gist_oEmbed {
 
 				// Update the style sheet reference.
 				if ( ! empty( $json->stylesheet ) ) {
-					update_option( 'blazersix_gist_embed_stylesheet', $json->stylesheet );
+					update_option( 'blazersix_gist_oembed_stylesheet', $json->stylesheet );
 				}
 			}
 
