@@ -187,7 +187,7 @@ class Blazer_Six_Gist_oEmbed {
 		// Short-circuit the shortcode output and just delete the transient.
 		// This is set to true when posts are updated.
 		if ( $this->delete_shortcode_transients ) {
-			delete_transient( 'gist_html_' . $shortcode_hash );
+			delete_transient( $this->transient_key( $shortcode_hash ) );
 			return;
 		}
 
@@ -348,7 +348,7 @@ class Blazer_Six_Gist_oEmbed {
 
 		$shortcode_hash = $this->shortcode_hash( 'gist', $args );
 		$raw_key = '_gist_raw_' . md5( $url );
-		$transient_key = 'gist_html_' . $shortcode_hash;
+		$transient_key = $this->transient_key( $shortcode_hash );
 
 		$html = get_transient( $transient_key );
 
@@ -575,5 +575,18 @@ class Blazer_Six_Gist_oEmbed {
 	protected function shortcode_hash( $tag, $args ) {
 		ksort( $args );
 		return md5( $tag . '_' . serialize( $args ) );
+	}
+
+	/**
+	 * Get the transient key.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param string $identifier The identifier part of the key.
+	 *
+	 * @return string
+	 */
+	protected function transient_key( $identifier ) {
+		return 'gist_html_' . $identifier;
 	}
 }
