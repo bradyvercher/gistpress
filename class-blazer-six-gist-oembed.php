@@ -585,7 +585,9 @@ class Blazer_Six_Gist_oEmbed {
 	/**
 	 * Get the transient key.
 	 *
-	 * @param string $hash The identifier part of the key.
+	 * @since 1.1.0
+	 *
+	 * @param string $identifier The identifier part of the key.
 	 *
 	 * @return string
 	 */
