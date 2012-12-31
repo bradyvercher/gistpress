@@ -9,7 +9,7 @@
  * @license GPL-2.0+
  *
  * @todo Feed support: link directly to post, directly to Gist, or wrap in iframe?
- * @todo Cache the style sheet locally.
+ * @todo Cache the stylesheet locally.
  */
 
 /**
@@ -34,7 +34,7 @@ class Blazer_Six_Gist_oEmbed {
 	/**
 	 * Sets a logger instance on the object.
 	 *
-	 * Since logging is optional, the dependcy injection is done via this
+	 * Since logging is optional, the dependency injection is done via this
 	 * method, instead of being required through a constructor.
 	 *
 	 * Under PSR-1, this method would be called setLogger().
@@ -79,7 +79,7 @@ class Blazer_Six_Gist_oEmbed {
 		wp_embed_register_handler( 'gist', '#(https://gist\.github\.com/([a-z0-9]+))(?:\#file_(.*))?#i', array( $this, 'wp_embed_handler' ) );
 		add_shortcode( 'gist', array( $this, 'shortcode' ) );
 
-		add_action( 'wp_enqueue_scripts', array( $this, 'style' ) );
+		add_action( 'init', array( $this, 'style' ) );
 		add_action( 'post_updated', array( $this, 'expire_gist_transients' ), 10, 3 );
 	}
 
@@ -157,7 +157,7 @@ class Blazer_Six_Gist_oEmbed {
 				$rawattr[] = $key . '="' . $value . '"';
 			}
 		}
-		$shortcode = '[gist ' . implode(' ', $rawattr) . ']';
+		$shortcode = '[gist ' . implode( ' ', $rawattr ) . ']';
 
 		$defaults = apply_filters(
 			'blazersix_gist_shortcode_defaults',
@@ -182,9 +182,6 @@ class Blazer_Six_Gist_oEmbed {
 		$attr['highlight']         = $this->parse_highlight_arg( $attr['highlight'] );
 		$attr['lines']             = $this->parse_line_number_arg( $attr['lines'] );
 
-		// Log what we're dealing with - title uses original attributes, but hashed against processed attributes.
-		$this->debug_log( '<h2>' . $shortcode . '</h2>', $this->shortcode_hash( 'gist', $attr ) );
-
 		// Short-circuit the shortcode output and just expire the transient.
 		// This is set to true when posts are updated.
 		if ( $this->expire_transients ) {
@@ -192,9 +189,14 @@ class Blazer_Six_Gist_oEmbed {
 			return;
 		}
 
+		$shortcode_hash = $this->shortcode_hash( 'gist', $attr );
+
+		// Log what we're dealing with - title uses original attributes, but hashed against processed attributes.
+		$this->debug_log( '<h2>' . $shortcode . '</h2>', $shortcode_hash );
+
 		// Bail if the ID is not set.
 		if ( empty( $attr['id'] ) ) {
-			$this->debug_log( __( 'Shortcode did not have a required id attribute.', 'blazer_six_gist_oembed' ), $this->shortcode_hash( 'gist', $attr ) );
+			$this->debug_log( __( 'Shortcode did not have a required id attribute.', 'blazer_six_gist_oembed' ), $shortcode_hash );
 			return '';
 		}
 
@@ -205,9 +207,7 @@ class Blazer_Six_Gist_oEmbed {
 			$html = $this->get_gist_html( $json_url, $attr );
 
 			if ( '{{unknown}}' === $html ) {
-				return;
-				/** @todo Get reference to $wp_embed. Global? */
-				return $wp_embed->maybe_make_link( $url );
+				return make_clickable( $url );
 			}
 
 			// If there was a result, return it.
@@ -221,13 +221,14 @@ class Blazer_Six_Gist_oEmbed {
 				foreach ( $attr as $key => $value ) {
 					$message  = '<strong>' . $key . __(' (shortcode attribute)', 'blazer_six_gist_oembed') . ':</strong> ';
 					$message .= is_scalar( $value ) ? $value : print_r( $value, true );
-					$this->debug_log( $message, $this->shortcode_hash( 'gist', $attr ) );
+					$this->debug_log( $message, $shortcode_hash );
 				}
-				$this->debug_log( '<strong>Gist:</strong><br />' . $html, $this->shortcode_hash( 'gist', $attr ) );
+				$this->debug_log( '<strong>Gist:</strong><br />' . $html, $shortcode_hash );
 
 				return $html;
 			}
 		}
+
 		return '';
 	}
 
@@ -261,7 +262,7 @@ class Blazer_Six_Gist_oEmbed {
 		}
 
 		// Determine which lines should be highlighted.
-		$highlight = array_map('trim', explode( ',', $line_numbers ));
+		$highlight = array_map( 'trim', explode( ',', $line_numbers ) );
 
 		// Convert any ranges.
 		foreach ( $highlight as $index => $num ) {
@@ -270,7 +271,7 @@ class Blazer_Six_Gist_oEmbed {
 
 				$range = array_map( 'trim', explode( '-', $num ) );
 				foreach ( range( $range[0], $range[1] ) as $line ) {
-					array_push($highlight, $line);
+					array_push( $highlight, $line );
 				}
 			}
 		}
@@ -344,14 +345,15 @@ class Blazer_Six_Gist_oEmbed {
 			$url = add_query_arg( 'file', urlencode( $args['file'] ), $url );
 		}
 
+		$shortcode_hash = $this->shortcode_hash( 'gist', $args );
 		$post_meta_key = '_gist_embed_' . md5( $url );
-		$transient_key = 'gist_embed_' . $this->shortcode_hash( 'gist', $args );
+		$transient_key = 'gist_embed_' . $shortcode_hash;
 
 		$html = get_transient( $transient_key );
 
 		// Retrieve html from Gist JSON endpoint.
 		if ( empty( $html ) ) {
-			$this->debug_log( '<strong>' . __( 'Doing remote request:', 'blazersix-gist-oembed' ) . '</strong> ' . $url, $this->shortcode_hash( 'gist', $args ) );
+			$this->debug_log( '<strong>' . __( 'Doing remote request:', 'blazersix-gist-oembed' ) . '</strong> ' . $url, $shortcode_hash );
 			$json = $this->fetch_gist( $url );
 
 			if ( ! empty( $json->div ) ) {
@@ -372,27 +374,27 @@ class Blazer_Six_Gist_oEmbed {
 				// @link http://core.trac.wordpress.org/ticket/21767
 				update_post_meta( $post->ID, $post_meta_key, addslashes( $html ) );
 				$html = $this->process_gist_html( $html, $args );
-				$this->debug_log( '<p class="source">' . __( '<strong>Output Source:</strong> Remote Request', 'blazersix-gist-oembed' ) . '</p>', $this->shortcode_hash( 'gist', $args ) );
+				$this->debug_log( '<p class="source">' . __( '<strong>Output Source:</strong> Remote Request', 'blazersix-gist-oembed' ) . '</p>', $shortcode_hash );
 			} elseif ( $fallback = get_post_meta( $post->ID, $post_meta_key, true ) ) {
 				// Return the fallback instead of {{unknown}}
 				$html = $this->process_gist_html( $fallback, $args );
 
 				// Cache the fallback for an hour.
 				$transient_expire = 60 * 60;
-				$this->debug_log( '<p class="source">' . __( '<strong>Output Source:</strong> Post Meta Fallback', 'blazersix-gist-oembed' ) . '</p>', $this->shortcode_hash( 'gist', $args ) );
+				$this->debug_log( '<p class="source">' . __( '<strong>Output Source:</strong> Post Meta Fallback', 'blazersix-gist-oembed' ) . '</p>', $shortcode_hash );
 			} else {
-				$this->debug_log( '<strong style="color: #e00">' . __( 'Remote call and transient failed and fallback was empty.', 'blazersix-gist-oembed' ) . '</strong>', $this->shortcode_hash( 'gist', $args ) );
+				$this->debug_log( '<strong style="color: #e00">' . __( 'Remote call and transient failed and fallback was empty.', 'blazersix-gist-oembed' ) . '</strong>', $shortcode_hash );
 			}
 
 			// Cache the processed HTML.
 			set_transient( $transient_key, $html, $transient_expire );
 		} else {
-			$this->debug_log( '<p class="source">' . __( '<strong>Output Source:</strong> Transient Cache', 'blazersix-gist-oembed' ) . '</p>', $this->shortcode_hash( 'gist', $args ) );
+			$this->debug_log( '<p class="source">' . __( '<strong>Output Source:</strong> Transient Cache', 'blazersix-gist-oembed' ) . '</p>', $shortcode_hash );
 		}
 
-		$this->debug_log( '<strong>' . __( 'JSON Endpoint:', 'blazersix-gist-oembed' ) . '</strong> ' . $url, $this->shortcode_hash( 'gist', $args ) );
-		$this->debug_log( '<strong>' . __( 'Post Meta Cache Key:', 'blazersix-gist-oembed' ) . '</strong> ' . $post_meta_key, $this->shortcode_hash( 'gist', $args ) );
-		$this->debug_log( '<strong>' . __( 'Transient Key:', 'blazersix-gist-oembed' ) . '</strong> ' . $transient_key, $this->shortcode_hash( 'gist', $args ) );
+		$this->debug_log( '<strong>' . __( 'JSON Endpoint:', 'blazersix-gist-oembed' ) . '</strong> ' . $url, $shortcode_hash );
+		$this->debug_log( '<strong>' . __( 'Post Meta Cache Key:', 'blazersix-gist-oembed' ) . '</strong> ' . $post_meta_key, $shortcode_hash );
+		$this->debug_log( '<strong>' . __( 'Transient Key:', 'blazersix-gist-oembed' ) . '</strong> ' . $transient_key, $shortcode_hash );
 
 		return $html;
 	}

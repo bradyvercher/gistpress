@@ -40,8 +40,8 @@ class Blazer_Six_Gist_oEmbed_Log {
 	 *         ),
 	 *         array(
 	 *             'message' => 'Another message for the same gist shortcode.',
-	 *             'extra'     => 'data';
-	 *             'if'     => 'needed';
+	 *             'extra'   => 'data';
+	 *             'if'      => 'needed';
 	 *         ),
 	 *     ),
 	 *     'barkey' => array(
@@ -51,8 +51,8 @@ class Blazer_Six_Gist_oEmbed_Log {
 	 *         ),
 	 *         array(
 	 *             'message' => 'Another message for gist bar.',
-	 *             'extra'     => 'data';
-	 *             'if'     => 'needed';
+	 *             'extra'   => 'data';
+	 *             'if'      => 'needed';
 	 *         ),
 	 *     ),
 	 * );
@@ -93,7 +93,7 @@ class Blazer_Six_Gist_oEmbed_Log {
 		$context['message'] = $message;
 		$key = isset( $context['key'] ) ? $context['key'] : md5( $message );
 		unset( $context['key'] );
-		$this->logs[$key][] = $context;
+		$this->logs[ $key ][] = $context;
 	}
 
 	/**

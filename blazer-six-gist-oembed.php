@@ -28,7 +28,7 @@ if ( ! class_exists( 'Blazer_Six_Gist_oEmbed_Log' ) ) {
 }
 $gist_oembed_logger = new Blazer_Six_Gist_oEmbed_Log;
 
-add_action( 'init', 'blazer_six_gist_oembed_localization' );
+add_action( 'init', 'blazersix_gist_oembed_localization' );
 /**
  * Support localization for plugin.
  *
@@ -36,15 +36,15 @@ add_action( 'init', 'blazer_six_gist_oembed_localization' );
  *
  * @since 1.1.0
  */
-function blazer_six_gist_oembed_localization() {
+function blazersix_gist_oembed_localization() {
 	$domain = 'blazersix-gist-oembed';
 	// The "plugin_locale" filter is also used in load_plugin_textdomain()
 	$locale = apply_filters( 'plugin_locale', get_locale(), $domain );
-	load_textdomain( $domain, WP_LANG_DIR . '/my-plugin/' . $domain . '-' . $locale . '.mo' );
-	load_plugin_textdomain( $domain, false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+	load_textdomain( $domain, WP_LANG_DIR . '/blazer-six-gist-oembed/' . $domain . '-' . $locale . '.mo' );
+	load_plugin_textdomain( $domain, false, plugin_dir_path( __FILE__ ) . 'languages/' );
 }
 
-add_action( 'init', 'blazer_six_gist_oembed_init' );
+add_action( 'init', 'blazersix_gist_oembed_init' );
 /**
  * Set plugin logger class and initialise plugin.
  *
@@ -53,43 +53,30 @@ add_action( 'init', 'blazer_six_gist_oembed_init' );
  *
  * @since 1.1.0
  */
-function blazer_six_gist_oembed_init() {
+function blazersix_gist_oembed_init() {
 	global $gist_oembed, $gist_oembed_logger;
 	$gist_oembed->set_logger( $gist_oembed_logger );
 	$gist_oembed->run();
 }
 
-/** @todo Can the following two functions be made static methods of the debug
- * bar class, since there is already an inherent dependency? */
-
-// Late priority to give Debug Bar plugin chance to initialise
-add_action( 'plugins_loaded', 'blazer_six_gist_oembed_add_debug_bar_panel_support', 15 );
+add_filter( 'debug_bar_panels', 'blazersix_gist_oembed_add_debug_bar_panel' );
 /**
- * Add optional support for Debug Bar plugin, if enabled
- *
- * @return null Return early if Debug Bar plugin not enabled.
- */
-function blazer_six_gist_oembed_add_debug_bar_panel_support() {
-	if ( ! class_exists( 'Debug_Bar' ) || is_admin() || ! is_admin_bar_showing() ) {
-		return;
-	}
-
-	add_filter( 'debug_bar_panels', 'blazer_six_gist_oembed_add_debug_bar_panel' );
-}
-
-/**
- * Add instance of our debug bar panel to Debug Bar plugin.
+ * Add instance of our debug bar panel to Debug Bar plugin if not in the admin.
  *
  * @param array $panels
  *
- * @return Blazer_Six_Gist_oEmbed_Debug_Bar_Panel
+ * @return array Debug Bar panels.
  */
-function blazer_six_gist_oembed_add_debug_bar_panel( array $panels ) {
+function blazersix_gist_oembed_add_debug_bar_panel( array $panels ) {
 	global $gist_oembed_logger;
-//	wp_die('panel being added');
-	if ( ! class_exists( 'Blazer_Six_Gist_oEmbed_Debug_Bar_Panel' ) ) {
-		require( plugin_dir_path( __FILE__ ) . 'class-blazer-six-gist-oembed-debug-bar-panel.php' );
+
+	if ( ! is_admin() ) {
+		if ( ! class_exists( 'Blazer_Six_Gist_oEmbed_Debug_Bar_Panel' ) ) {
+			require( plugin_dir_path( __FILE__ ) . 'class-blazer-six-gist-oembed-debug-bar-panel.php' );
+		}
+
+		$panels[] = new Blazer_Six_Gist_oEmbed_Debug_Bar_Panel( $gist_oembed_logger );
 	}
-	$panels[] = new Blazer_Six_Gist_oEmbed_Debug_Bar_Panel( $gist_oembed_logger );
+
 	return $panels;
 }
