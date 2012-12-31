@@ -546,8 +546,7 @@ class Blazer_Six_Gist_oEmbed {
 	 * @param array $args List of shortcode attributes.
 	 */
 	public function expire_gist_transient( $args ) {
-		$key = 'gist_embed_' . $this->shortcode_hash( 'gist', $args );
-		set_transient( $key, null, -1 );
+		delete_transient( 'gist_embed_' . $this->shortcode_hash( 'gist', $args ) );
 	}
 
 	/**
