@@ -357,6 +357,7 @@ class Blazer_Six_Gist_oEmbed {
 			$transient_expire = 60 * 60 * 24;
 
 			if ( $html && '{{unknown}}' != $html ) {
+				$html = $this->process_gist_html( $html, $args );
 				$this->debug_log( __( '<strong>Raw Source:</strong> Transient Cache', 'blazersix-gist-oembed' ), $shortcode_hash );
 			} else {
 				// Retrieve raw html from Gist JSON endpoint.
