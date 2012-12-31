@@ -138,6 +138,7 @@ class Blazer_Six_Gist_oEmbed {
 	 *     * To change it globally, hook into the filter and supply a different color.
 	 * - lines - A range of lines to limit the Gist to.
 	 *     * Suited for single file Gists or shortcodes using the 'file' attribute.
+	 * - lines_start - A number to start counting from for line numbers.
 	 * - show_line_numbers - Whether line numbers should be displayed.
 	 * - show_meta - Whether the trailing meta information in default Gist embeds should be displayed.
 	 *
