@@ -150,7 +150,7 @@ class Blazer_Six_Gist_oEmbed {
 	public function shortcode( $attr ) {
 		global $post;
 
-		// Rebuild the original shortcode as a string with raw attributes
+		// Rebuild the original shortcode as a string with raw attributes.
 		$rawattr = array();
 		foreach ( $attr as $key => $value ) {
 			if ( 'oembed' != $key ) {
@@ -163,6 +163,7 @@ class Blazer_Six_Gist_oEmbed {
 			'blazersix_gist_shortcode_defaults',
 			array(
 				'embed_stylesheet'  => apply_filters( 'blazersix_gist_embed_stylesheet_default', true ),
+				'fetch'             => false,
 				'file'              => '',
 				'highlight'         => array(),
 				'highlight_color'   => apply_filters( 'blazersix_gist_embed_highlight_color', '#ffffcc' ),
@@ -170,7 +171,7 @@ class Blazer_Six_Gist_oEmbed {
 				'lines'             => '',
 				'show_line_numbers' => true,
 				'show_meta'         => true,
-				'oembed'            => 0, // private use only
+				'oembed'            => 0, // Private use only
 			)
 		);
 
@@ -181,6 +182,10 @@ class Blazer_Six_Gist_oEmbed {
 		$attr['show_meta']         = $this->shortcode_bool( $attr['show_meta'] );
 		$attr['highlight']         = $this->parse_highlight_arg( $attr['highlight'] );
 		$attr['lines']             = $this->parse_line_number_arg( $attr['lines'] );
+
+		// Don't use the fetch attribute in the shortcode hash.
+		$fetch = $this->shortcode_bool( $attr['fetch'] );
+		unset( $attr['fetch'] );
 
 		$shortcode_hash = $this->shortcode_hash( 'gist', $attr );
 
@@ -204,7 +209,7 @@ class Blazer_Six_Gist_oEmbed {
 		$json_url = $url . '.json';
 
 		if ( isset( $post->ID ) ) {
-			$html = $this->get_gist_html( $json_url, $attr );
+			$html = $this->get_gist_html( $json_url, $attr, $fetch );
 
 			if ( '{{unknown}}' === $html ) {
 				return make_clickable( $url );
@@ -332,12 +337,13 @@ class Blazer_Six_Gist_oEmbed {
 	 *
 	 * @since 1.1.0
 	 *
-	 * @param string $url  The JSON endpoint for the Gist.
-	 * @param array  $args List of shortcode attributes.
+	 * @param string $url   The JSON endpoint for the Gist.
+	 * @param array  $args  List of shortcode attributes.
+	 * @param bool   $fetch Whether the Gist's raw HTML should be remotely fetched.
 	 *
 	 * @return string Gist HTML or {{unknown}} if it couldn't be determined.
 	 */
-	public function get_gist_html( $url, $args ) {
+	public function get_gist_html( $url, $args, $fetch = false ) {
 		global $post;
 
 		// Add a specific file from a Gist to the URL.
@@ -355,7 +361,7 @@ class Blazer_Six_Gist_oEmbed {
 			$html = get_transient( $raw_key );
 			$transient_expire = 60 * 60 * 24;
 
-			if ( $html && '{{unknown}}' != $html ) {
+			if ( ! $fetch && $html && '{{unknown}}' != $html ) {
 				$this->debug_log( __( '<strong>Raw Source:</strong> Transient Cache', 'blazersix-gist-oembed' ), $shortcode_hash );
 			} else {
 				// Retrieve raw html from Gist JSON endpoint.
