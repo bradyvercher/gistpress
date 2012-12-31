@@ -206,6 +206,11 @@ class Blazer_Six_Gist_oEmbed {
 		$json_url = $url . '.json';
 
 		if ( isset( $post->ID ) ) {
+			if ( is_feed() ) {
+				$html = sprintf( '<a href="%s" target="_blank"><em>%s</em></a>', esc_url( $url ), __( 'View this code snippet on GitHub.', 'blazersix-gist-oembed' ) );
+				return apply_filters( 'blazersix_gist_oembed_feed_html', $html );
+			}
+
 			$html = $this->get_gist_html( $json_url, $attr );
 
 			if ( '{{unknown}}' === $html ) {
