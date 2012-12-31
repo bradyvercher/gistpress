@@ -168,6 +168,7 @@ class Blazer_Six_Gist_oEmbed {
 				'highlight_color'   => apply_filters( 'blazersix_gist_embed_highlight_color', '#ffffcc' ),
 				'id'                => '',
 				'lines'             => '',
+				'lines_start'       => '',
 				'show_line_numbers' => true,
 				'show_meta'         => true,
 				'oembed'            => 0, // Private use only
@@ -324,7 +325,7 @@ class Blazer_Six_Gist_oEmbed {
 	 * expires, then it is requested from the remote URL again.
 	 *
 	 * In the event the HTML can't be fetched from the remote endpoint and the
-	 * transient is expired, the HTML is retrieved from the post meta backup.
+	 * transient has expired, the HTML is retrieved from the post meta backup.
 	 *
 	 * This algorithm allows Gist HTML to stay in sync with any changes GitHub
 	 * may make to their markup, while providing a local cache for faster
@@ -457,8 +458,8 @@ class Blazer_Six_Gist_oEmbed {
 
 		if ( ! empty( $lines_matches[2] ) ) {
 			// Restrict the line number display if a range has been specified.
-			if ( $args['show_line_numbers'] && $args['lines']['min'] && $args['lines']['max'] ) {
-				$html = $this->limit_gist_line_numbers( $html, $args['lines'] );
+			if ( $args['show_line_numbers'] && ( ( $args['lines']['min'] && $args['lines']['max'] ) || ! empty( $args['lines_start'] ) ) ) {
+				$html = $this->process_gist_line_numbers( $html, $args['lines'], $args['lines_start'] );
 			}
 
 			if ( ! empty( $args['highlight'] ) ) {
@@ -504,23 +505,48 @@ class Blazer_Six_Gist_oEmbed {
 
 	/**
 	 * Removes line numbers from the Gist's HTML that fall outside the
-	 * supplied range.
+	 * supplied range and modifies the starting number if specified.
 	 *
 	 * @since 1.1.0
 	 *
 	 * @param string $html  HTML from the Gist's JSON endpoint.
 	 * @param array  $range Array of min and max values.
+	 * @param int    $start Optional. Line number to start counting at.
 	 *
 	 * @return string Modified HTML.
 	 */
-	public function limit_gist_line_numbers( $html, $range ) {
-		// Limit the line numbers that should show.
+	public function process_gist_line_numbers( $html, $range, $start = null ) {
 		$line_num_pattern = '#(<td class="line_numbers">)(.*?)</td>#s';
-
 		preg_match( $line_num_pattern, $html, $line_num_matches );
 
 		if ( $line_num_matches[2] ) {
-			$line_numbers = array_slice( explode( "\n", trim( $line_num_matches[2] ) ), $range['min'] - 1, $range['max'] - $range['min'] + 1 );
+			$start = absint( $start );
+			$lines = array_map( 'trim', explode( "\n", trim( $line_num_matches[2] ) ) );
+
+			if( ! $start && $range['min'] && $range['max'] ) {
+				$line_numbers = array_slice( $lines, $range['min'] - 1, $range['max'] - $range['min'] + 1 );
+			} else {
+				// Determine how many lines should be shown.
+				$range_length = count( $lines );
+				if ( $range['min'] && $range['max'] ) {
+					$range_length = $range['max'] - $range['min'];
+					$start = ( $start ) ? $start : $range['min'];
+				}
+	
+				// Create a template with a placeholder for the line number.
+				preg_match( '#<span rel="([^"]+)[0-9]+?"#', $lines[0], $attr_matches );
+				if ( ! empty( $attr_matches[1] ) ) {
+					$template = sprintf( '<span rel="%1$s%2$s" id="%1$s%2$s">%2$s</span>', esc_attr( $attr_matches[1] ), '{{num}}' );
+				} else {
+					$template = '<span>{{num}}</span>';
+				}
+	
+				// Generate HTML for the line numbers.
+				$line_numbers = array();
+				for ( $i = $start; $i <= $start + $range_length; $i ++ ) {
+					$line_numbers[] = str_replace( '{{num}}', $i, $template );
+				}
+			}
 
 			$replacement = $line_num_matches[1] . join( "\n", $line_numbers ) . '</td>';
 			$html = preg_replace( $line_num_pattern, $replacement, $html, 1 );
