@@ -9,7 +9,7 @@
  * @license GPL-2.0+
  *
  * @todo Feed support: link directly to post, directly to Gist, or wrap in iframe?
- * @todo Cache the stylesheet locally.
+ * @todo Cache the style sheet locally.
  */
 
 /**
@@ -24,12 +24,12 @@ class Blazer_Six_Gist_oEmbed {
 	protected $logger = null;
 
 	/**
-	 * Toggle to short-circuit shortcode output and expire its corresponding
+	 * Toggle to short-circuit shortcode output and delete its corresponding
 	 * transient so output can be regenerated the next time it is run.
 	 *
 	 * @var bool
 	 */
-	protected $expire_transients = false;
+	protected $delete_shortcode_transients = false;
 
 	/**
 	 * Sets a logger instance on the object.
@@ -80,7 +80,7 @@ class Blazer_Six_Gist_oEmbed {
 		add_shortcode( 'gist', array( $this, 'shortcode' ) );
 
 		add_action( 'init', array( $this, 'style' ) );
-		add_action( 'post_updated', array( $this, 'expire_gist_transients' ), 10, 3 );
+		add_action( 'post_updated', array( $this, 'delete_gist_transients' ), 10, 3 );
 	}
 
 	/**
@@ -182,14 +182,14 @@ class Blazer_Six_Gist_oEmbed {
 		$attr['highlight']         = $this->parse_highlight_arg( $attr['highlight'] );
 		$attr['lines']             = $this->parse_line_number_arg( $attr['lines'] );
 
-		// Short-circuit the shortcode output and just expire the transient.
+		$shortcode_hash = $this->shortcode_hash( 'gist', $attr );
+
+		// Short-circuit the shortcode output and just delete the transient.
 		// This is set to true when posts are updated.
-		if ( $this->expire_transients ) {
-			$this->expire_gist_transient( $attr );
+		if ( $this->delete_shortcode_transients ) {
+			delete_transient( 'gist_html_' . $shortcode_hash );
 			return;
 		}
-
-		$shortcode_hash = $this->shortcode_hash( 'gist', $attr );
 
 		// Log what we're dealing with - title uses original attributes, but hashed against processed attributes.
 		$this->debug_log( '<h2>' . $shortcode . '</h2>', $shortcode_hash );
@@ -346,55 +346,65 @@ class Blazer_Six_Gist_oEmbed {
 		}
 
 		$shortcode_hash = $this->shortcode_hash( 'gist', $args );
-		$post_meta_key = '_gist_embed_' . md5( $url );
-		$transient_key = 'gist_embed_' . $shortcode_hash;
+		$raw_key = '_gist_raw_' . md5( $url );
+		$transient_key = 'gist_html_' . $shortcode_hash;
 
 		$html = get_transient( $transient_key );
 
-		// Retrieve html from Gist JSON endpoint.
 		if ( empty( $html ) ) {
-			$this->debug_log( '<strong>' . __( 'Doing remote request:', 'blazersix-gist-oembed' ) . '</strong> ' . $url, $shortcode_hash );
-			$json = $this->fetch_gist( $url );
+			$html = get_transient( $raw_key );
+			$transient_expire = 60 * 60 * 24;
 
-			if ( ! empty( $json->div ) ) {
-				$html = $json->div;
-			}
+			if ( $html && '{{unknown}}' != $html ) {
+				$this->debug_log( __( '<strong>Raw Source:</strong> Transient Cache', 'blazersix-gist-oembed' ), $shortcode_hash );
+			} else {
+				// Retrieve raw html from Gist JSON endpoint.
+				$json = $this->fetch_gist( $url );
 
-			// Update the style sheet reference.
-			if ( ! empty( $json->stylesheet ) ) {
-				update_option( 'blazersix_gist_embed_stylesheet', $json->stylesheet );
+				if ( ! empty( $json->div ) ) {
+					set_transient( $raw_key, $json->div, $transient_expire );
+
+					// Update the post meta fallback.
+					// @link http://core.trac.wordpress.org/ticket/21767
+					update_post_meta( $post->ID, $raw_key, addslashes( $json->div ) );
+
+					$html = $this->process_gist_html( $json->div, $args );
+
+					$this->debug_log( __( '<strong>Raw Source:</strong> Remote JSON Endpoint - ', 'blazersix-gist-oembed' ) . $url, $shortcode_hash );
+					$this->debug_log( __( '<strong>Output Source:</strong> Processed the raw source.', 'blazersix-gist-oembed' ), $shortcode_hash );
+				}
+
+				// Update the style sheet reference.
+				if ( ! empty( $json->stylesheet ) ) {
+					update_option( 'blazersix_gist_embed_stylesheet', $json->stylesheet );
+				}
 			}
 
 			// Failures are cached, too. Update the post to attempt to fetch again.
 			$html = ( $html ) ? $html : '{{unknown}}';
-			$transient_expire = 60 * 60 * 24;
 
-			if ( '{{unknown}}' != $html ) {
-				// Update the post meta fallback.
-				// @link http://core.trac.wordpress.org/ticket/21767
-				update_post_meta( $post->ID, $post_meta_key, addslashes( $html ) );
-				$html = $this->process_gist_html( $html, $args );
-				$this->debug_log( '<p class="source">' . __( '<strong>Output Source:</strong> Remote Request', 'blazersix-gist-oembed' ) . '</p>', $shortcode_hash );
-			} elseif ( $fallback = get_post_meta( $post->ID, $post_meta_key, true ) ) {
+			if ( '{{unknown}}' == $html && ( $fallback = get_post_meta( $post->ID, $raw_key, true ) ) ) {
 				// Return the fallback instead of {{unknown}}
 				$html = $this->process_gist_html( $fallback, $args );
 
 				// Cache the fallback for an hour.
 				$transient_expire = 60 * 60;
-				$this->debug_log( '<p class="source">' . __( '<strong>Output Source:</strong> Post Meta Fallback', 'blazersix-gist-oembed' ) . '</p>', $shortcode_hash );
-			} else {
+
+				$this->debug_log( __( '<strong>Raw Source:</strong> Post Meta Fallback', 'blazersix-gist-oembed' ), $shortcode_hash );
+				$this->debug_log( __( '<strong>Output Source:</strong> Processed Raw Source', 'blazersix-gist-oembed' ), $shortcode_hash );
+			} elseif ( '{{unknown}}' == $html ) {
 				$this->debug_log( '<strong style="color: #e00">' . __( 'Remote call and transient failed and fallback was empty.', 'blazersix-gist-oembed' ) . '</strong>', $shortcode_hash );
 			}
 
 			// Cache the processed HTML.
 			set_transient( $transient_key, $html, $transient_expire );
 		} else {
-			$this->debug_log( '<p class="source">' . __( '<strong>Output Source:</strong> Transient Cache', 'blazersix-gist-oembed' ) . '</p>', $shortcode_hash );
+			$this->debug_log( __( '<strong>Output Source:</strong> Transient Cache', 'blazersix-gist-oembed' ), $shortcode_hash );
 		}
 
 		$this->debug_log( '<strong>' . __( 'JSON Endpoint:', 'blazersix-gist-oembed' ) . '</strong> ' . $url, $shortcode_hash );
-		$this->debug_log( '<strong>' . __( 'Post Meta Cache Key:', 'blazersix-gist-oembed' ) . '</strong> ' . $post_meta_key, $shortcode_hash );
-		$this->debug_log( '<strong>' . __( 'Transient Key:', 'blazersix-gist-oembed' ) . '</strong> ' . $transient_key, $shortcode_hash );
+		$this->debug_log( '<strong>' . __( 'Raw Key (Transient & Post Meta):', 'blazersix-gist-oembed' ) . '</strong> ' . $raw_key, $shortcode_hash );
+		$this->debug_log( '<strong>' . __( 'Processed Output Key (Transient):', 'blazersix-gist-oembed' ) . '</strong> ' . $transient_key, $shortcode_hash );
 
 		return $html;
 	}
@@ -529,24 +539,12 @@ class Blazer_Six_Gist_oEmbed {
 	 * @param WP_Post $post_after  Post object after update.
 	 * @param WP_Post $post_before Post object before update.
 	 */
-	public function expire_gist_transients( $post_id, $post_after, $post_before ) {
-		$this->expire_transients = true;
+	public function delete_gist_transients( $post_id, $post_after, $post_before ) {
+		$this->delete_shortcode_transients = true;
 
 		// Run the shortcodes to clear associated transients.
 		do_shortcode( $post_after->post_content );
 		do_shortcode( $post_before->post_content );
-	}
-
-	/**
-	 * Expire the transient associated with a particular shortcode so its HTML
-	 * will be regenerated the next time it is requested.
-	 *
-	 * @since 1.1.0
-	 *
-	 * @param array $args List of shortcode attributes.
-	 */
-	public function expire_gist_transient( $args ) {
-		delete_transient( 'gist_embed_' . $this->shortcode_hash( 'gist', $args ) );
 	}
 
 	/**
