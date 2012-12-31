@@ -356,7 +356,7 @@ class Blazer_Six_Gist_oEmbed {
 			$html = get_transient( $raw_key );
 			$transient_expire = 60 * 60 * 24;
 
-			if ( ! $fetch && $html && '{{unknown}}' != $html ) {
+			if ( $html && '{{unknown}}' != $html ) {
 				$this->debug_log( __( '<strong>Raw Source:</strong> Transient Cache', 'blazersix-gist-oembed' ), $shortcode_hash );
 			} else {
 				// Retrieve raw html from Gist JSON endpoint.
@@ -546,6 +546,17 @@ class Blazer_Six_Gist_oEmbed {
 		// Run the shortcodes to clear associated transients.
 		do_shortcode( $post_after->post_content );
 		do_shortcode( $post_before->post_content );
+
+		// Delete raw transients whose keys match a post meta fallback.
+		$keys = get_post_custom_keys( $post_id );
+
+		if ( $keys ) {
+			foreach( $keys as $key ) {
+				if ( 0 === strpos( $key, '_gist_raw_' ) ) {
+					delete_transient( $key );
+				}
+			}
+		}
 	}
 
 	/**
