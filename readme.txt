@@ -3,7 +3,7 @@ Contributors: blazersix, bradyvercher
 Tags: gist, github, oembed
 Requires at least: 3.4
 Tested up to: 3.5
-Stable tag: 1.0.1
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,8 +12,6 @@ Gist oEmbed and shortcode support with caching.
 == Description ==
 
 Enable oEmbed-like support for embedding Gists in your post content.
-
-Allows for removing the external stylesheet dependency, so the styles can be added directly to your local stylesheet. Go ahead, style your Gists. Give them line numbers and alternating line background colors (check the included example stylesheet).
 
 == Installation ==
 
@@ -26,6 +24,8 @@ Installing Blazer Six Gist oEmbed is just like installing most other plugins. [C
 Gists are cached when they're first loaded. Update the post to invalidate the cache and fetch any changes.
 
 == Changelog ==
+
+= 1.1.0 =
 
 = 1.0.1 =
 * Fixed issue with slashes being stripped by update_metadata(). http://core.trac.wordpress.org/ticket/21767
