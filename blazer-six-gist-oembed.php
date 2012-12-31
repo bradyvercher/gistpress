@@ -8,6 +8,7 @@
  * Author URI: http://www.blazersix.com/
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain: blazersix-gist-oembed
  *
  * @package BlazerSix\GistoEmbed
  * @author Brady Vercher <brady@blazersix.com>
