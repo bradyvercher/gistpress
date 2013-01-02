@@ -11,9 +11,9 @@ GitHub provides a method for embedding Gists on websites, but it requires insert
 * Limit which lines from a Gist are displayed. Helpful for breaking down code so it can be easily explained.
 * Highlight specific lines within a Gist to call attention to them.
 * Easily debug embedded Gists using a custom panel for the [Debug Bar](http://wordpress.org/extend/plugins/debug-bar/) plugin.
-* A few additional CSS classes are inserted very better styling hooks.
+* A few additional CSS classes are inserted for better styling hooks.
 
-![Example Gist embed with line number restrictions, a highlighted line, and meta links disabled](https://github.com/bradyvercher/wp-blazer-six-gist-oembed/blob/master/screenshot-1.png)
+![Example Gist embed with line number restrictions, a highlighted line, and meta links disabled](https://raw.github.com/bradyvercher/wp-blazer-six-gist-oembed/master/screenshot-1.png)
 
 ### Caching ###
 
