@@ -13,7 +13,7 @@
  * Plugin URI: https://github.com/bradyvercher/wp-blazer-six-gist-oembed
  * Description: Gist oEmbed and shortcode support with caching.
  * Version: 1.1.0
- * Author: Blazer Six, Inc.
+ * Author: Blazer Six
  * Author URI: http://www.blazersix.com/
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
