@@ -1,6 +1,6 @@
 # Blazer Six Gist oEmbed #
 
-Easily embed Gists in WordPress via oEmbed or shortcode.
+A WordPress plugin to easily embed Gists via oEmbed or shortcode.
 
 GitHub provides a method for embedding Gists on websites, but it requires inserting a `<script>` tag, which can become mangled or stripped from the TinyMCE editor used in WordPress. Instead, this plugin allows you to embed a Gist by simply inserting its URL into the editor for oEmbed-like support, or via a shortcode for more refined control.
 
