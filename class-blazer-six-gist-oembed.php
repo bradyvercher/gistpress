@@ -212,7 +212,7 @@ class Blazer_Six_Gist_oEmbed {
 
 			$html = $this->get_gist_html( $json_url, $attr );
 
-			if ( '{{unknown}}' === $html ) {
+			if ( $this->unknown() === $html ) {
 				return make_clickable( $url );
 			}
 
@@ -362,7 +362,7 @@ class Blazer_Six_Gist_oEmbed {
 			$html = get_transient( $raw_key );
 			$transient_expire = 60 * 60 * 24;
 
-			if ( $html && '{{unknown}}' != $html ) {
+			if ( $html && $this->unknown() != $html ) {
 				$html = $this->process_gist_html( $html, $args );
 				$this->debug_log( __( '<strong>Raw Source:</strong> Transient Cache', 'blazersix-gist-oembed' ), $shortcode_hash );
 			} else {
@@ -389,9 +389,9 @@ class Blazer_Six_Gist_oEmbed {
 			}
 
 			// Failures are cached, too. Update the post to attempt to fetch again.
-			$html = ( $html ) ? $html : '{{unknown}}';
+			$html = ( $html ) ? $html : $this->unknown();
 
-			if ( '{{unknown}}' == $html && ( $fallback = get_post_meta( $post->ID, $raw_key, true ) ) ) {
+			if ( $this->unknown() == $html && ( $fallback = get_post_meta( $post->ID, $raw_key, true ) ) ) {
 				// Return the fallback instead of {{unknown}}
 				$html = $this->process_gist_html( $fallback, $args );
 
@@ -400,7 +400,7 @@ class Blazer_Six_Gist_oEmbed {
 
 				$this->debug_log( __( '<strong>Raw Source:</strong> Post Meta Fallback', 'blazersix-gist-oembed' ), $shortcode_hash );
 				$this->debug_log( __( '<strong>Output Source:</strong> Processed Raw Source', 'blazersix-gist-oembed' ), $shortcode_hash );
-			} elseif ( '{{unknown}}' == $html ) {
+			} elseif ( $this->unknown() == $html ) {
 				$this->debug_log( '<strong style="color: #e00">' . __( 'Remote call and transient failed and fallback was empty.', 'blazersix-gist-oembed' ) . '</strong>', $shortcode_hash );
 			}
 
@@ -631,5 +631,16 @@ class Blazer_Six_Gist_oEmbed {
 	 */
 	protected function transient_key( $identifier ) {
 		return 'gist_html_' . $identifier;
+	}
+	
+	/**
+	 * String to identify a failure when retrieving a Gist's HTML.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @return string
+	 */
+	protected function unknown() {
+		return '{{unknown}}';
 	}
 }
