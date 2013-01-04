@@ -143,45 +143,23 @@ class Blazer_Six_Gist_oEmbed {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array $attr Attributes of the shortcode.
+	 * @uses Blazer_Six_Gist_oEmbed::rebuild_shortcode() Rebuild shortcode string.
+	 * @uses Blazer_Six_Gist_oEmbed::standardize_attributes() Set defaults and sanitize.
+	 * @uses Blazer_Six_Gist_oEmbed::shortcode_hash() Get hash of attributes.
+	 * @uses Blazer_Six_Gist_oEmbed::transient_key() Transient key name.
+	 * @uses Blazer_Six_Gist_oEmbed::debug_log() Potentially log a debug message.
+	 * @uses Blazer_Six_Gist_oEmbed::debug_log() Gist retrieval failure string.
+	 *
+	 * @param array $rawattr Raw attributes of the shortcode.
 	 *
 	 * @return string HTML content to display the Gist.
 	 */
-	public function shortcode( $attr ) {
+	public function shortcode( $rawattr ) {
 		global $post;
 
-		// Rebuild the original shortcode as a string with raw attributes.
-		$rawattr = array();
-		foreach ( $attr as $key => $value ) {
-			if ( 'oembed' != $key ) {
-				$rawattr[] = $key . '="' . $value . '"';
-			}
-		}
-		$shortcode = '[gist ' . implode( ' ', $rawattr ) . ']';
+		$shortcode = $this->rebuild_shortcode( $rawattr );
 
-		$defaults = apply_filters(
-			'blazersix_gist_shortcode_defaults',
-			array(
-				'embed_stylesheet'  => apply_filters( 'blazersix_gist_oembed_stylesheet_default', true ),
-				'file'              => '',
-				'highlight'         => array(),
-				'highlight_color'   => apply_filters( 'blazersix_gist_oembed_highlight_color', '#ffc' ),
-				'id'                => '',
-				'lines'             => '',
-				'lines_start'       => '',
-				'show_line_numbers' => true,
-				'show_meta'         => true,
-				'oembed'            => 0, // Private use only
-			)
-		);
-
-		// Sanitize attributes.
-		$attr = shortcode_atts( $defaults, $attr );
-		$attr['embed_stylesheet']  = $this->shortcode_bool( $attr['embed_stylesheet'] );
-		$attr['show_line_numbers'] = $this->shortcode_bool( $attr['show_line_numbers'] );
-		$attr['show_meta']         = $this->shortcode_bool( $attr['show_meta'] );
-		$attr['highlight']         = $this->parse_highlight_arg( $attr['highlight'] );
-		$attr['lines']             = $this->parse_line_number_arg( $attr['lines'] );
+		$attr = $this->standardize_attributes( $rawattr );
 
 		$shortcode_hash = $this->shortcode_hash( 'gist', $attr );
 
@@ -590,6 +568,60 @@ class Blazer_Six_Gist_oEmbed {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Rebuild the original shortcode as a string with raw attributes.
+	 *
+	 * @since 1.1.1
+	 *
+	 * @param array $rawattr Raw attributes => values.
+	 */
+	protected function rebuild_shortcode( array $rawattr ) {
+		$attrs = array();
+		foreach ( $rawattr as $key => $value ) {
+			if ( 'oembed' != $key ) {
+				$attrs[] = $key . '="' . $value . '"';
+			}
+		}
+		return '[gist ' . implode( ' ', $rawattr ) . ']';
+	}
+
+	/**
+	 * Set defaults and sanitize shortcode attributes and attribute values.
+	 *
+	 * @since 1.1.1
+	 *
+	 * @param array $rawattr Raw attributes => values.
+	 *
+	 * @return array
+	 */
+	protected function standardize_attributes( array $rawattr = null ) {
+		$defaults = apply_filters(
+			'blazersix_gist_shortcode_defaults',
+			array(
+				'embed_stylesheet'  => apply_filters( 'blazersix_gist_oembed_stylesheet_default', true ),
+				'file'              => '',
+				'highlight'         => array(),
+				'highlight_color'   => apply_filters( 'blazersix_gist_oembed_highlight_color', '#ffc' ),
+				'id'                => '',
+				'lines'             => '',
+				'lines_start'       => '',
+				'show_line_numbers' => true,
+				'show_meta'         => true,
+				'oembed'            => 0, // Private use only
+			)
+		);
+
+		// Sanitize attributes.
+		$attr = shortcode_atts( $defaults, $rawattr );
+		$attr['embed_stylesheet']  = $this->shortcode_bool( $attr['embed_stylesheet'] );
+		$attr['show_line_numbers'] = $this->shortcode_bool( $attr['show_line_numbers'] );
+		$attr['show_meta']         = $this->shortcode_bool( $attr['show_meta'] );
+		$attr['highlight']         = $this->parse_highlight_arg( $attr['highlight'] );
+		$attr['lines']             = $this->parse_line_number_arg( $attr['lines'] );
+
+		return $attr;
 	}
 
 	/**
