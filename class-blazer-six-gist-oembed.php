@@ -165,7 +165,7 @@ class Blazer_Six_Gist_oEmbed {
 				'embed_stylesheet'  => apply_filters( 'blazersix_gist_oembed_stylesheet_default', true ),
 				'file'              => '',
 				'highlight'         => array(),
-				'highlight_color'   => apply_filters( 'blazersix_gist_oembed_highlight_color', '#ffffcc' ),
+				'highlight_color'   => apply_filters( 'blazersix_gist_oembed_highlight_color', '#ffc' ),
 				'id'                => '',
 				'lines'             => '',
 				'lines_start'       => '',
@@ -537,7 +537,7 @@ class Blazer_Six_Gist_oEmbed {
 					$range_length = $range['max'] - $range['min'];
 					$start = ( $start ) ? $start : $range['min'];
 				}
-	
+
 				// Create a template with a placeholder for the line number.
 				preg_match( '#<span rel="([^"]+)[0-9]+?"#', $lines[0], $attr_matches );
 				if ( ! empty( $attr_matches[1] ) ) {
@@ -545,7 +545,7 @@ class Blazer_Six_Gist_oEmbed {
 				} else {
 					$template = '<span>{{num}}</span>';
 				}
-	
+
 				// Generate HTML for the line numbers.
 				$line_numbers = array();
 				for ( $i = $start; $i <= $start + $range_length; $i ++ ) {
@@ -632,7 +632,7 @@ class Blazer_Six_Gist_oEmbed {
 	protected function transient_key( $identifier ) {
 		return 'gist_html_' . $identifier;
 	}
-	
+
 	/**
 	 * String to identify a failure when retrieving a Gist's HTML.
 	 *
