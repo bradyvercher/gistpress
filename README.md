@@ -88,6 +88,26 @@ Maybe you want to disable line numbers and the links included below a Gist:
 
 There are also attributes for disabling the default stylesheet, changing the highlight color, and specifying a starting point for the line numbers.
 
+### Highlighting ###
+
+To support a basic install-and-go, the plugin currently adds the only style not in the GitHub default style sheet, that of highlighted lines, as a `style` attribute with a `background-color` property.
+
+We also add a class however, and competent developers may like to add something like:
+
+```css
+.pre-line-highlight {
+    background-color: #ffc !important;
+}
+```
+
+...to their theme style sheet (choosing a color that better suits their theme) and:
+
+```php
+add_filter( 'blazersix_gist_oembed_highlight_color', '__return_false' );
+```
+
+...to their theme functions.php to avoid the `style` attribute being added in.
+
 ## Notes ##
 
 Some themes may include styles that interfere with the default rules for embedded Gists. You can override the conflicting styles in your theme's (or [child theme's](http://codex.wordpress.org/Child_Themes)) style sheet with more specific rules targetting the embed HTML. Typically, this might include removing margins on `<pre>` elements, changing padding on the table cells, and ensuring the `line-height` and `font-size` properties for line numbers and code match so they align properly.
