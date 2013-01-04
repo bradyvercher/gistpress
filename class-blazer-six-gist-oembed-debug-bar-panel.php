@@ -69,7 +69,7 @@ class Blazer_Six_Gist_oEmbed_Debug_Bar_Panel extends Debug_Bar_Panel {
 	/**
 	 * Echo details about a single gist.
 	 *
-	 * @since 1.2.0
+	 * @since 1.1.1
 	 *
 	 * @param array $gist
 	 */
@@ -85,7 +85,7 @@ class Blazer_Six_Gist_oEmbed_Debug_Bar_Panel extends Debug_Bar_Panel {
 	/**
 	 * Internal style sheet added for styling gist logs on the the debug bar panel.
 	 *
-	 * @since 1.2.0
+	 * @since 1.1.1
 	 */
 	protected function add_styles() {
 		?>
