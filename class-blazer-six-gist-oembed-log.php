@@ -36,23 +36,23 @@ class Blazer_Six_Gist_oEmbed_Log {
 	 *     'fookey' => array(
 	 *         array(
 	 *             'message' => 'Some message.',
-	 *             'qwe'     => 'rty';
+	 *             'qwe'     => 'rty',
 	 *         ),
 	 *         array(
 	 *             'message' => 'Another message for the same gist shortcode.',
-	 *             'extra'   => 'data';
-	 *             'if'      => 'needed';
+	 *             'extra'   => 'data',
+	 *             'if'      => 'needed',
 	 *         ),
 	 *     ),
 	 *     'barkey' => array(
 	 *         array(
 	 *             'message' => 'Some message for gist bar.',
-	 *             'qwe'     => 'rty';
+	 *             'qwe'     => 'rty',
 	 *         ),
 	 *         array(
 	 *             'message' => 'Another message for gist bar.',
-	 *             'extra'   => 'data';
-	 *             'if'      => 'needed';
+	 *             'extra'   => 'data',
+	 *             'if'      => 'needed',
 	 *         ),
 	 *     ),
 	 * );

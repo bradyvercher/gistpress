@@ -67,6 +67,8 @@ add_filter( 'debug_bar_panels', 'blazersix_gist_oembed_add_debug_bar_panel' );
 /**
  * Add instance of our debug bar panel to Debug Bar plugin if not in the admin.
  *
+ * @since 1.1.0
+ *
  * @param array $panels
  *
  * @return array Debug Bar panels.

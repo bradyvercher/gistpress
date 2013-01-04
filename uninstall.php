@@ -1,4 +1,14 @@
 <?php
+/**
+ * Blazer Six Gist oEmbed
+ *
+ * @package BlazerSix\GistoEmbed
+ * @author Brady Vercher <brady@blazersix.com>
+ * @author Gary Jones <gary@garyjones.co.uk>
+ * @copyright Copyright (c) 2012, Blazer Six, Inc.
+ * @license GPL-2.0+
+ */
+
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
