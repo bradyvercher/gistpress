@@ -61,13 +61,33 @@ class Blazer_Six_Gist_oEmbed_Debug_Bar_Panel extends Debug_Bar_Panel {
 	public function render() {
 		$logs = $this->logger->get_logs();
 		foreach ( $logs as $log_id => $gist ) {
-			echo '<div class="b6go-gist-debug">';
-			foreach ( $gist as $entry ) {
-				// Don't wpautop tabular data, as it adds <br> between line number spans.
-				echo ( false === strpos( $entry['message'], '<table' ) ) ? wpautop ( $entry['message'] ) : $entry['message'];
-			}
-			echo '</div>';
+			$this->write_gist_details( $gist );
 		}
+		$this->add_styles();
+	}
+
+	/**
+	 * Echo details about a single gist.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param array $gist
+	 */
+	protected function write_gist_details( array $gist ) {
+		echo '<div class="b6go-gist-debug">';
+		foreach ( $gist as $entry ) {
+			// Don't wpautop tabular data, as it adds <br> between line number spans.
+			echo ( false === strpos( $entry['message'], '<table' ) ) ? wpautop ( $entry['message'] ) : $entry['message'];
+		}
+		echo '</div>';
+	}
+
+	/**
+	 * Internal style sheet added for styling gist logs on the the debug bar panel.
+	 *
+	 * @since 1.2.0
+	 */
+	protected function add_styles() {
 		?>
 		<style type="text/css">
 		.b6go-gist-debug { margin: 2em 0; padding: 10px; background: #e8e8e8;}
