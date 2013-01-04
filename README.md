@@ -13,7 +13,7 @@ GitHub provides a method for embedding Gists on websites, but it requires insert
 * Easily debug embedded Gists using a custom panel for the [Debug Bar](http://wordpress.org/extend/plugins/debug-bar/) plugin.
 * A few additional CSS classes are inserted for better styling hooks.
 
-![Embedded Gist Screenshot](https://raw.github.com/bradyvercher/wp-blazer-six-gist-oembed/master/screenshot-1.png)  
+![Embedded Gist Screenshot](https://raw.github.com/bradyvercher/wp-blazer-six-gist-oembed/master/screenshot-1.png)
 _Example Gist embed with line number restrictions, a highlighted line, and meta links disabled._
 
 ### Caching ###
@@ -23,6 +23,10 @@ Embedded Gists are cached using a custom algorithm that minimizes HTTP requests 
 If you decide you don't want to use the plugin, simply uninstall using the "Delete" link on the Plugins screen, and all cached data and options will be cleaned up. Like it never even existed.
 
 ## Installation ##
+
+### Requirements ###
+
+Tested on WordPress 3.5.0. May work on versions as far back as 2.9.0.
 
 ### Upload ###
 
@@ -90,5 +94,5 @@ Some themes may include styles that interfere with the default rules for embedde
 
 ## Credits ##
 
-Built by [Brady Vercher](https://twitter.com/bradyvercher) & [Gary Jones](https://twitter.com/GaryJ)  
+Built by [Brady Vercher](https://twitter.com/bradyvercher) & [Gary Jones](https://twitter.com/GaryJ)
 Copyright 2012 [Blazer Six, Inc.](http://www.blazersix.com/)
