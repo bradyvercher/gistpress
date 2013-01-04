@@ -536,7 +536,7 @@ class Blazer_Six_Gist_oEmbed {
 				// Determine how many lines should be shown.
 				$range_length = count( $lines );
 				if ( $range['min'] && $range['max'] ) {
-					$range_length = $range['max'] - $range['min'];
+					$range_length = $range['max'] - $range['min'] + 1;
 					$start = ( $start ) ? $start : $range['min'];
 				}
 
@@ -550,7 +550,7 @@ class Blazer_Six_Gist_oEmbed {
 
 				// Generate HTML for the line numbers.
 				$line_numbers = array();
-				for ( $i = $start; $i <= $start + $range_length; $i ++ ) {
+				for ( $i = $start; $i <= $start + $range_length - 1; $i ++ ) {
 					$line_numbers[] = str_replace( '{{num}}', $i, $template );
 				}
 			}
