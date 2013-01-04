@@ -2,18 +2,23 @@
 
 A WordPress plugin to easily embed Gists via oEmbed or shortcode.
 
+__Contributors:__ [Brady Vercher](https://github.com/bradyvercher), [Gary Jones](https://github.com/GaryJones)  
+__Requires:__ May work on WordPress versions as far back as 2.9.0.  
+__Tested up to:__ 3.5.0  
+__License:__ [GPL-2.0+](http://www.gnu.org/licenses/gpl-2.0.html)
+
 GitHub provides a method for embedding Gists on websites, but it requires inserting a `<script>` tag, which can become mangled or stripped from the TinyMCE editor used in WordPress. Instead, this plugin allows you to embed a Gist by simply inserting its URL into the editor for oEmbed-like support, or via a shortcode for more refined control.
 
 ## Features ##
 
-* Better integration with the visual editor in WordPress since `<script>` tags don't need to be used, which also allows visitors without javascript to view your code snippets.
+* Better integration with the visual editor in WordPress since `<script>` tags aren't used, which also allows visitors without javascript to view your code snippets.
 * Users viewing your content in a feed reader will see a link directly to the Gist instead of nothing.
 * Limit which lines from a Gist are displayed. Helpful for breaking down code so it can be easily explained.
 * Highlight specific lines within a Gist to call attention to them.
 * Easily debug embedded Gists using a custom panel for the [Debug Bar](http://wordpress.org/extend/plugins/debug-bar/) plugin.
 * A few additional CSS classes are inserted for better styling hooks.
 
-![Embedded Gist Screenshot](https://raw.github.com/bradyvercher/wp-blazer-six-gist-oembed/master/screenshot-1.png)
+![Embedded Gist Screenshot](https://raw.github.com/bradyvercher/wp-blazer-six-gist-oembed/master/screenshot-1.png)  
 _Example Gist embed with line number restrictions, a highlighted line, and meta links disabled._
 
 ### Caching ###
@@ -23,10 +28,6 @@ Embedded Gists are cached using a custom algorithm that minimizes HTTP requests 
 If you decide you don't want to use the plugin, simply uninstall using the "Delete" link on the Plugins screen, and all cached data and options will be cleaned up. Like it never even existed.
 
 ## Installation ##
-
-### Requirements ###
-
-Tested on WordPress 3.5.0. May work on versions as far back as 2.9.0.
 
 ### Upload ###
 
@@ -56,13 +57,13 @@ Then go to your Plugins screen and click __Activate__.
 
 ### oEmbed ###
 
-Just insert the URL to a Gist on its own line (don't link it up), like this:
+Insert the URL to a Gist on its own line like this (don't link it up):
 
 `https://gist.github.com/9b1307f153f4abe352a4`
 
 That's it!
 
-_(Notice that's a URL for a secret Gist? Of course URLs for public Gists work, too.)_
+_Notice that is a URL for a secret Gist? Of course URLs for public Gists work, too._
 
 ### Shortcode ###
 
@@ -88,11 +89,13 @@ Maybe you want to disable line numbers and the links included below a Gist:
 
 There are also attributes for disabling the default stylesheet, changing the highlight color, and specifying a starting point for the line numbers.
 
+## Notes ##
+
+Some themes may include styles that interfere with the default rules for embedded Gists. You can override the conflicting styles in your theme's (or [child theme's](http://codex.wordpress.org/Child_Themes)) style sheet with more specific rules targetting the embed HTML. Typically, this might include removing margins on `<pre>` elements, changing padding on the table cells, and ensuring the `line-height` and `font-size` properties for line numbers and code match so they align properly.
+
 ### Highlighting ###
 
-To support a basic install-and-go, the plugin currently adds the only style not in the GitHub default style sheet, that of highlighted lines, as a `style` attribute with a `background-color` property.
-
-We also add a class however, and competent developers may like to add something like:
+To support line highlighting, an inline style is added by the plugin, however, a class is also added to the line element. Developers can add a CSS rule similar to the following to their theme style sheet in order to change the color:
 
 ```css
 .pre-line-highlight {
@@ -100,19 +103,13 @@ We also add a class however, and competent developers may like to add something 
 }
 ```
 
-...to their theme style sheet (choosing a color that better suits their theme) and:
+And the following would go in the theme's functions.php to disable the `style` attribute.
 
 ```php
 add_filter( 'blazersix_gist_oembed_highlight_color', '__return_false' );
 ```
 
-...to their theme functions.php to avoid the `style` attribute being added in.
-
-## Notes ##
-
-Some themes may include styles that interfere with the default rules for embedded Gists. You can override the conflicting styles in your theme's (or [child theme's](http://codex.wordpress.org/Child_Themes)) style sheet with more specific rules targetting the embed HTML. Typically, this might include removing margins on `<pre>` elements, changing padding on the table cells, and ensuring the `line-height` and `font-size` properties for line numbers and code match so they align properly.
-
 ## Credits ##
 
-Built by [Brady Vercher](https://twitter.com/bradyvercher) & [Gary Jones](https://twitter.com/GaryJ)
+Built by [Brady Vercher](https://twitter.com/bradyvercher) & [Gary Jones](https://twitter.com/GaryJ)  
 Copyright 2012 [Blazer Six, Inc.](http://www.blazersix.com/)
