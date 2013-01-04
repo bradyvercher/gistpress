@@ -496,7 +496,9 @@ class Blazer_Six_Gist_oEmbed {
 					}
 				}
 
-				$prepend = '<pre class="' . join( ' ', $classes ) . '"' . $style . '>';
+				$class = apply_filters( 'blazersix_gist_oembed_line_classes', $classes ) ? ' class="' . implode ( ' ', $classes ) . '"' : '';
+
+				$prepend = '<pre ' . $class . $style . '>';
 
 				$lines[ $key ] = $prepend . $line . '</pre>';
 			}
