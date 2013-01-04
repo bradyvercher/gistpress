@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2012, Blazer Six, Inc.
  * @license   GPL-2.0+
  *
- * @todo Cache the style sheet locally.
+ * @todo Cache the style sheet locally. #22
  */
 
 /**
@@ -68,13 +68,20 @@ class Blazer_Six_Gist_oEmbed {
 	 * handler is registered to mimic oEmbed functionality, but it relies on
 	 * the shortcode for processing.
 	 *
-	 * Old URL Format: https://gist.github.com/{{id}}#file_{{filename}}
-	 * New URL Format: https://gist.github.com/{{id}}#file-{{file_slug}}
+	 * File matching is maintained for backward compatibility, but won't work
+	 * for the new Gist "bookmark" URLs. This is because the bookmarks point to
+	 * element IDs which have been sanitized so that both hyphen and period in a
+	 * file name show up as a hyphen e.g. a filename of foo.bar and foo-bar both
+	 * appear in the bookmark URL as foo-bar. That means we currently have no
+	 * way of working out what the actual file name is, so that we can construct
+	 * a correct URL JSON endpoint for getting data about just a single file.
+	 *
+	 * Old supported URL Format: https://gist.github.com/{{id}}#file_{{filename}}
+	 * New bookmark URL Format: https://gist.github.com/{{id}}#file-{{file_slug}}
 	 *
 	 * @since 1.1.0
 	 */
 	public function run() {
-		// File matching is maintained for backward compatibility, but won't work for the new Gist "bookmark" URLs.
 		wp_embed_register_handler( 'gist', '#(https://gist\.github\.com/([a-z0-9]+))(?:\#file_(.*))?#i', array( $this, 'wp_embed_handler' ) );
 		add_shortcode( 'gist', array( $this, 'shortcode' ) );
 
@@ -100,8 +107,17 @@ class Blazer_Six_Gist_oEmbed {
 	 * source code.
 	 *
 	 * @since 1.0.0
+	 *
+	 * @param array  $matches Search results against the regex pattern listed in
+	 *                        run().
+	 * @param array  $attr    Associative array of shortcode attributes, merged
+	 *                        with embed handler default attributes.
+	 * @param string $url     The URL attempting to be embedded.
+	 * @param array  $rawattr  Associative array of raw shortcode attributes.
+	 *
+	 * @return string Shortcode
 	 */
-	public function wp_embed_handler( $matches, $attr, $url, $rawattr ) {
+	public function wp_embed_handler( array $matches, array $attr, $url, array $rawattr ) {
 		$shortcode = '[gist';
 
 		if ( isset( $matches[2] ) && ! empty( $matches[2] ) ) {
@@ -154,7 +170,7 @@ class Blazer_Six_Gist_oEmbed {
 	 *
 	 * @return string HTML content to display the Gist.
 	 */
-	public function shortcode( $rawattr ) {
+	public function shortcode( array $rawattr ) {
 		global $post;
 
 		$shortcode = $this->rebuild_shortcode( $rawattr );
@@ -269,7 +285,7 @@ class Blazer_Six_Gist_oEmbed {
 	 *
 	 * @param string $line_numbers Range of line numbers separated by a dash.
 	 *
-	 * @return array Array with min and max line numbers.
+	 * @return array Associative array with min and max line numbers.
 	 */
 	public function parse_line_number_arg( $line_numbers ) {
 		if ( empty( $line_numbers ) ) {
@@ -294,9 +310,9 @@ class Blazer_Six_Gist_oEmbed {
 	 * Retrieve Gist HTML.
 	 *
 	 * Gist HTML can come from one of three different sources:
-	 * - Remote JSON endpoint.
-	 * - Transient.
-	 * - Post meta cache.
+	 *   Remote JSON endpoint,
+	 *   Transient,
+	 *   Post meta cache.
 	 *
 	 * When a Gist is intially requested, the HTML is fetched from the JSON
 	 * endpoint and cached in a post meta field. It is then processed to limit
@@ -318,11 +334,10 @@ class Blazer_Six_Gist_oEmbed {
 	 *
 	 * @param string $url   The JSON endpoint for the Gist.
 	 * @param array  $args  List of shortcode attributes.
-	 * @param bool   $fetch Whether the Gist's raw HTML should be remotely fetched.
 	 *
 	 * @return string Gist HTML or {{unknown}} if it couldn't be determined.
 	 */
-	public function get_gist_html( $url, $args ) {
+	public function get_gist_html( $url, array $args ) {
 		global $post;
 
 		// Add a specific file from a Gist to the URL.
@@ -338,7 +353,7 @@ class Blazer_Six_Gist_oEmbed {
 
 		if ( empty( $html ) ) {
 			$html = get_transient( $raw_key );
-			$transient_expire = 60 * 60 * 24;
+			$transient_expire = 86400; // 60 * 60 * 24 = 1 day
 
 			if ( $html && $this->unknown() != $html ) {
 				$html = $this->process_gist_html( $html, $args );
@@ -370,11 +385,11 @@ class Blazer_Six_Gist_oEmbed {
 			$html = ( $html ) ? $html : $this->unknown();
 
 			if ( $this->unknown() == $html && ( $fallback = get_post_meta( $post->ID, $raw_key, true ) ) ) {
-				// Return the fallback instead of {{unknown}}
+				// Return the fallback instead of the string representing unknown.
 				$html = $this->process_gist_html( $fallback, $args );
 
 				// Cache the fallback for an hour.
-				$transient_expire = 60 * 60;
+				$transient_expire = 3600; // 60 * 60 = 1 hour
 
 				$this->debug_log( __( '<strong>Raw Source:</strong> Post Meta Fallback', 'blazersix-gist-oembed' ), $shortcode_hash );
 				$this->debug_log( __( '<strong>Output Source:</strong> Processed Raw Source', 'blazersix-gist-oembed' ), $shortcode_hash );
@@ -402,12 +417,13 @@ class Blazer_Six_Gist_oEmbed {
 	 *
 	 * @param string $url Gist JSON endpoint.
 	 *
-	 * @return object|bool Gist JSON object or false.
+	 * @return object|bool Gist JSON object, or false if anything except a HTTP
+	 *                     Status code of 200 was received.
 	 */
 	public function fetch_gist( $url ) {
 		$response = wp_remote_get( $url, array( 'sslverify' => false ) );
 
-		if ( 200 == wp_remote_retrieve_response_code( $response ) ) {
+		if ( '200' == wp_remote_retrieve_response_code( $response ) ) {
 			return json_decode( wp_remote_retrieve_body( $response ) );
 		}
 
@@ -425,7 +441,7 @@ class Blazer_Six_Gist_oEmbed {
 	 *
 	 * @return string Modified HTML.
 	 */
-	public function process_gist_html( $html, $args ) {
+	public function process_gist_html( $html, array $args ) {
 		// Remove the line number cell if it has been disabled.
 		if ( ! $args['show_line_numbers'] ) {
 			$html = preg_replace( '#<td class="line_numbers">.*?</td>#s', '', $html );
@@ -499,7 +515,7 @@ class Blazer_Six_Gist_oEmbed {
 	 *
 	 * @return string Modified HTML.
 	 */
-	public function process_gist_line_numbers( $html, $range, $start = null ) {
+	public function process_gist_line_numbers( $html, array $range, $start = null ) {
 		$line_num_pattern = '#(<td class="line_numbers">)(.*?)</td>#s';
 		preg_match( $line_num_pattern, $html, $line_num_matches );
 
@@ -551,7 +567,7 @@ class Blazer_Six_Gist_oEmbed {
 	 * @param WP_Post $post_after  Post object after update.
 	 * @param WP_Post $post_before Post object before update.
 	 */
-	public function delete_gist_transients( $post_id, $post_after, $post_before ) {
+	public function delete_gist_transients( $post_id, WP_Post $post_after, WP_Post $post_before ) {
 		$this->delete_shortcode_transients = true;
 
 		// Run the shortcodes to clear associated transients.
@@ -576,6 +592,8 @@ class Blazer_Six_Gist_oEmbed {
 	 * @since 1.1.1
 	 *
 	 * @param array $rawattr Raw attributes => values.
+	 *
+	 * @return string Gist shortcode.
 	 */
 	protected function rebuild_shortcode( array $rawattr ) {
 		$attrs = array();
@@ -592,11 +610,11 @@ class Blazer_Six_Gist_oEmbed {
 	 *
 	 * @since 1.1.1
 	 *
-	 * @param array $rawattr Raw attributes => values.
+	 * @param array $rawattr Associative array of raw attributes => values.
 	 *
-	 * @return array
+	 * @return array Standardized and sanitized shortcode attributes.
 	 */
-	protected function standardize_attributes( array $rawattr = null ) {
+	protected function standardize_attributes( array $rawattr ) {
 		$defaults = apply_filters(
 			'blazersix_gist_shortcode_defaults',
 			array(
@@ -634,11 +652,13 @@ class Blazer_Six_Gist_oEmbed {
 	 * @since 1.1.0
 	 *
 	 * @param string $message A message to log for the current shortcode.
-	 * @param mixed  $id      An ID under which the message should be grouped.
+	 * @param mixed  $id      Optional. An ID under which the message should be grouped.
+	 *
+	 * @todo Handle missing $id any better?
 	 */
 	protected function debug_log( $message, $id = null ) {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && isset( $this->logger ) ) {
-			$this->logger->debug( $message, array('key' => $id ) );
+			$this->logger->debug( $message, array( 'key' => $id ) );
 		}
 	}
 
@@ -647,8 +667,13 @@ class Blazer_Six_Gist_oEmbed {
 	 * key and logger message grouping.
 	 *
 	 * @since 1.1.0
+	 *
+	 * @param string $tag  Shortcode tag, used as hash prefix.
+	 * @param array  $args Associative array of shortcode attributes.
+	 *
+	 * @return string md5 hash as a 32-character hexadecimal number.
 	 */
-	protected function shortcode_hash( $tag, $args ) {
+	protected function shortcode_hash( $tag, array $args ) {
 		ksort( $args );
 		return md5( $tag . '_' . serialize( $args ) );
 	}
@@ -660,7 +685,7 @@ class Blazer_Six_Gist_oEmbed {
 	 *
 	 * @param string $identifier The identifier part of the key.
 	 *
-	 * @return string
+	 * @return string Transient key name.
 	 */
 	protected function transient_key( $identifier ) {
 		return 'gist_html_' . $identifier;
