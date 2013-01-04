@@ -496,11 +496,10 @@ class Blazer_Six_Gist_oEmbed {
 					}
 				}
 
-				$class = apply_filters( 'blazersix_gist_oembed_line_classes', $classes ) ? ' class="' . implode ( ' ', $classes ) . '"' : '';
+				$classes = apply_filters( 'blazersix_gist_oembed_line_classes', $classes );
+				$class = ( ! empty( $classes ) && is_array( $classes ) ) ? ' class="' . implode ( ' ', $classes ) . '"' : '';
 
-				$prepend = '<pre ' . $class . $style . '>';
-
-				$lines[ $key ] = $prepend . $line . '</pre>';
+				$lines[ $key ] = '<pre' . $class . $style . '>' . $line . '</pre>';
 			}
 
 			$replacement = $lines_matches[1] . join( "\n", $lines ) . '</td>';
