@@ -18,6 +18,7 @@
  * License:     GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: blazersix-gist-oembed
+ * Domain Path: /languages/
  */
 
 // Instantiate main plugin class
@@ -44,8 +45,8 @@ function blazersix_gist_oembed_localization() {
 	$domain = 'blazersix-gist-oembed';
 	// The "plugin_locale" filter is also used in load_plugin_textdomain()
 	$locale = apply_filters( 'plugin_locale', get_locale(), $domain );
-	load_textdomain( $domain, WP_LANG_DIR . '/blazer-six-gist-oembed/' . $domain . '-' . $locale . '.mo' );
-	load_plugin_textdomain( $domain, false, plugin_dir_path( __FILE__ ) . 'languages/' );
+	load_textdomain( 'blazersix-gist-oembed', WP_LANG_DIR . '/blazer-six-gist-oembed/' . $domain . '-' . $locale . '.mo' );
+	load_plugin_textdomain( 'blazersix-gist-oembed', false, dirname( plugin_basename( __FILE__ ) ) . 'languages/' );
 }
 
 add_action( 'init', 'blazersix_gist_oembed_init' );
