@@ -78,11 +78,57 @@ Or even highlight lines:
 
 `[gist id="9b1307f153f4abe352a4" file="media-control-snippet.php" highlight="7"]`
 
-Maybe you want to disable line numbers and the links included below a Gist:
-
-`[gist id="9b1307f153f4abe352a4" file="media-control-snippet.php" show_line_numbers="0" show_meta="0"]`
-
-There are also attributes for disabling the default stylesheet, changing the highlight color, and specifying a starting point for the line numbers.
+<table><caption><h3>Shortcode Attributes</strong></h3>
+  <thead>
+    <tr>
+      <th>Attribute</th>
+    <th>Description</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong><code>id</code></strong></td>
+      <td>A Gist ID. Required. Secret Gist IDs work, too.</td>
+	  <td><em><code>4204333</code></td>
+    </tr>
+    <tr>
+      <td><strong><code>file</code></strong></td>
+      <td>A filename in a Gist. Required when using the following attributes with a multi-file Gist.</td>
+      <td><em><code>filename.php</code></em></td>
+    </tr>
+	<tr>
+		<td><strong><code>highlight</code></strong></td>
+		<td>Comma-separated list of lines or line ranges to highlight.</td>
+		<td><em><code>1,5-10,13</code></td>
+	</tr>
+	<tr>
+	  <td><strong><code>highlight_color</code></strong></td>
+	  <td>The highlight color. A filter is provided for changing globally.</td>
+	  <td><em><code>#ff0000</code></em></td>
+	</tr>
+    <tr>
+      <td><strong><code>lines</code></strong></td>
+      <td>The range of lines to display.</td>
+	  <td><em><code>2-10</code></em></td>
+    </tr>
+	<tr>
+	  <td><strong><code>lines_start</code></strong></td>
+	  <td>Number to start lines at.</td>
+	  <td><em><code>543</code></em></td>
+	</tr>
+	<tr>
+      <td><strong><code>show_line_numbers</code></strong></td>
+      <td>Whether line numbers should be displayed. Defaults to true.</td>
+	  <td><em><code>0</code> to disable.</em></td>
+    </tr>
+	<tr>
+      <td><strong><code>show_meta</code></strong></td>
+      <td>Whether the meta links following a Gist should be displayed. Defaults to true.</td>
+	  <td><em><code>0</code> to disable.</em></td>
+    </tr>
+  </tbody>
+</table>
 
 ## Notes ##
 
