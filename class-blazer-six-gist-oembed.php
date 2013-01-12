@@ -468,7 +468,7 @@ class Blazer_Six_Gist_oEmbed {
 
 			// Extract and cleanup the individual lines from the Gist HTML into an array for processing.
 			$lines = trim( $lines_matches[2] );
-			$lines = preg_split( '#</pre>[\s]*<pre>#', substr( $lines, 5, strlen( $lines ) - 6 ) );
+			$lines = preg_split( '#</pre>[\s]*<pre>#', substr( $lines, 5, strlen( $lines ) - 11 ) );
 
 			foreach ( $lines as $key => $line ) {
 				// Remove lines if they're not in the specified range and continue.
