@@ -1,4 +1,4 @@
-# Blazer Six Gist oEmbed #
+# GistPress #
 
 A WordPress plugin to easily embed Gists via oEmbed or shortcode.
 
@@ -106,10 +106,9 @@ To support line highlighting, an inline style is added by the plugin, however, a
 And the following would go in the theme's functions.php to disable the `style` attribute.
 
 ```php
-add_filter( 'blazersix_gist_oembed_highlight_color', '__return_false' );
+add_filter( 'gistpress_highlight_color', '__return_false' );
 ```
 
 ## Credits ##
 
-Built by [Brady Vercher](https://twitter.com/bradyvercher) & [Gary Jones](https://twitter.com/GaryJ)  
-Copyright 2012 [Blazer Six, Inc.](http://www.blazersix.com/)
+Built by [Brady Vercher](https://twitter.com/bradyvercher) & [Gary Jones](https://twitter.com/GaryJ)

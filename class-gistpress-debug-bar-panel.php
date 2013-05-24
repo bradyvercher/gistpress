@@ -1,8 +1,8 @@
 <?php
 /**
- * Blazer Six Gist oEmbed
+ * GistPress
  *
- * @package   BlazerSix\GistoEmbed
+ * @package   GistPress
  * @author    Brady Vercher <brady@blazersix.com>
  * @author    Gary Jones <gary@garyjones.co.uk>
  * @copyright Copyright (c) 2012, Blazer Six, Inc.
@@ -13,11 +13,11 @@
  * Class for displaying a custom panel on the debug bar with information about
  * Gist shortcodes used in a post.
  *
- * @package BlazerSix\GistoEmbed
+ * @package GistPress
  * @author Brady Vercher <brady@blazersix.com>
  * @author Gary Jones <gary@garyjones.co.uk>
  */
-class Blazer_Six_Gist_oEmbed_Debug_Bar_Panel extends Debug_Bar_Panel {
+class GistPress_Debug_Bar_Panel extends Debug_Bar_Panel {
 	/** @var object Logger object. */
 	protected $logger;
 
@@ -39,7 +39,7 @@ class Blazer_Six_Gist_oEmbed_Debug_Bar_Panel extends Debug_Bar_Panel {
 	 * @since 1.1.0
 	 */
 	public function init() {
-		$this->title( __( 'Gist oEmbed', 'blazersix-gist-oembed' ) );
+		$this->title( __( 'GistPress', 'gistpress' ) );
 	}
 
 	/**
@@ -74,7 +74,7 @@ class Blazer_Six_Gist_oEmbed_Debug_Bar_Panel extends Debug_Bar_Panel {
 	 * @param array $gist
 	 */
 	protected function write_gist_details( array $gist ) {
-		echo '<div class="b6go-gist-debug">';
+		echo '<div class="gistpress-debug">';
 		foreach ( $gist as $entry ) {
 			// Don't wpautop tabular data, as it adds <br> between line number spans.
 			echo ( false === strpos( $entry['message'], '<table' ) ) ? wpautop ( $entry['message'] ) : $entry['message'];
@@ -90,15 +90,15 @@ class Blazer_Six_Gist_oEmbed_Debug_Bar_Panel extends Debug_Bar_Panel {
 	protected function add_styles() {
 		?>
 		<style type="text/css">
-		.b6go-gist-debug { margin: 2em 0; padding: 10px; background: #e8e8e8;}
-		#querylist .b6go-gist-debug .gist .gist-file .gist-data .line_data pre {
+		.gistpress-debug { margin: 2em 0; padding: 10px; background: #e8e8e8;}
+		#querylist .gistpress-debug .gist .gist-file .gist-data .line_data pre {
 			overflow: auto;
 			word-wrap: normal;
 			-moz-tab-size: 4;
 			-o-tab-size: 4;
 			tab-size: 4;}
-		.b6go-gist-debug .gist .gist-file .gist-data .line_numbers span {font-size: 12px;}
-		#querylist .b6go-gist-debug h2 {border: 0; float: none; font-size: 22px; text-align: left; margin: 0 !important; padding-left: 0;}
+		.gistpress-debug .gist .gist-file .gist-data .line_numbers span {font-size: 12px;}
+		#querylist .gistpress-debug h2 {border: 0; float: none; font-size: 22px; text-align: left; margin: 0 !important; padding-left: 0;}
 		</style>
 		<?php
 	}

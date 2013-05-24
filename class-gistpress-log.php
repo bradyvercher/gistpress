@@ -1,8 +1,8 @@
 <?php
 /**
- * Blazer Six Gist oEmbed
+ * GistPress
  *
- * @package   BlazerSix\GistoEmbed
+ * @package   GistPress
  * @author    Brady Vercher <brady@blazersix.com>
  * @author    Gary Jones <garyy@garyjones.co.uk>
  * @copyright Copyright (c) 2012, Blazer Six, Inc.
@@ -22,11 +22,11 @@
  *
  * @see https://github.com/php-fig/log
  *
- * @package BlazerSix\GistoEmbed
+ * @package GistPress
  * @author Gary Jones <garyy@garyjones.co.uk>
  * @author Brady Vercher <brady@blazersix.com>
  */
-class Blazer_Six_Gist_oEmbed_Log {
+class GistPress_Log {
 	/**
 	 * Holds the log messages and contextual data.
 	 *
@@ -64,7 +64,7 @@ class Blazer_Six_Gist_oEmbed_Log {
 	 *
 	 * @since 1.1.0
 	 *
-	 * @uses Blazer_Six_Gist_oEmbed_Log::log()
+	 * @uses GistPress_Log::log()
 	 *
 	 * @param string $message
 	 * @param array  $context

@@ -1,0 +1,90 @@
+# This file is distributed under the same license as the GistPress Plugin package.
+msgid ""
+msgstr ""
+"Project-Id-Version: GistPress\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-05-24 15:33-0800\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Brady Vercher <brady@blazersix.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_x:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;_ex:1,2c;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
+"X-Poedit-Basepath: ../\n"
+"X-Textdomain-Support: yes\n"
+"X-Generator: Poedit 1.5.5\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: class-gistpress-debug-bar-panel.php:42
+msgid "GistPress"
+msgstr ""
+
+# @ gistpress
+#: class-gistpress.php:194
+msgid "Shortcode did not have a required id attribute."
+msgstr ""
+
+# @ gistpress
+#: class-gistpress.php:203
+msgid "View this code snippet on GitHub."
+msgstr ""
+
+# @ gistpress
+#: class-gistpress.php:222
+msgid " (shortcode attribute)"
+msgstr ""
+
+# @ gistpress
+#: class-gistpress.php:360
+msgid "<strong>Raw Source:</strong> Transient Cache"
+msgstr ""
+
+# @ gistpress
+#: class-gistpress.php:374
+msgid "<strong>Raw Source:</strong> Remote JSON Endpoint - "
+msgstr ""
+
+# @ gistpress
+#: class-gistpress.php:375
+msgid "<strong>Output Source:</strong> Processed the raw source."
+msgstr ""
+
+# @ gistpress
+#: class-gistpress.php:394
+msgid "<strong>Raw Source:</strong> Post Meta Fallback"
+msgstr ""
+
+# @ gistpress
+#: class-gistpress.php:395
+msgid "<strong>Output Source:</strong> Processed Raw Source"
+msgstr ""
+
+# @ gistpress
+#: class-gistpress.php:397
+msgid "Remote call and transient failed and fallback was empty."
+msgstr ""
+
+# @ gistpress
+#: class-gistpress.php:403
+msgid "<strong>Output Source:</strong> Transient Cache"
+msgstr ""
+
+# @ gistpress
+#: class-gistpress.php:406
+msgid "JSON Endpoint:"
+msgstr ""
+
+# @ gistpress
+#: class-gistpress.php:407
+msgid "Raw Key (Transient & Post Meta):"
+msgstr ""
+
+# @ gistpress
+#: class-gistpress.php:408
+msgid "Processed Output Key (Transient):"
+msgstr ""

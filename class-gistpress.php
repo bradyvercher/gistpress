@@ -1,8 +1,8 @@
 <?php
 /**
- * Blazer Six Gist oEmbed
+ * GistPress
  *
- * @package   BlazerSix/GistoEmbed
+ * @package   GistPress
  * @author    Brady Vercher <brady@blazersix.com>
  * @author    Gary Jones <gary@garyjones.co.uk>
  * @copyright Copyright (c) 2012, Blazer Six, Inc.
@@ -14,11 +14,11 @@
 /**
  * The main plugin class.
  *
- * @package BlazerSix/GistoEmbed
+ * @package GistPress
  * @author Brady Vercher <brady@blazersix.com>
  * @author Gary Jones <gary@garyjones.co.uk>
  */
-class Blazer_Six_Gist_oEmbed {
+class GistPress {
 	/** @var object Logger object. */
 	protected $logger = null;
 
@@ -95,7 +95,7 @@ class Blazer_Six_Gist_oEmbed {
 	 * @since 1.0.0
 	 */
 	public function style() {
-		wp_register_style( 'github-gist', get_option( 'blazersix_gist_oembed_stylesheet' ) );
+		wp_register_style( 'gistpress', get_option( 'gistpress_stylesheet' ) );
 	}
 
 	/**
@@ -113,7 +113,7 @@ class Blazer_Six_Gist_oEmbed {
 	 * @param array  $attr    Associative array of shortcode attributes, merged
 	 *                        with embed handler default attributes.
 	 * @param string $url     The URL attempting to be embedded.
-	 * @param array  $rawattr  Associative array of raw shortcode attributes.
+	 * @param array  $rawattr Associative array of raw shortcode attributes.
 	 *
 	 * @return string Shortcode
 	 */
@@ -159,12 +159,12 @@ class Blazer_Six_Gist_oEmbed {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @uses Blazer_Six_Gist_oEmbed::rebuild_shortcode() Rebuild shortcode string.
-	 * @uses Blazer_Six_Gist_oEmbed::standardize_attributes() Set defaults and sanitize.
-	 * @uses Blazer_Six_Gist_oEmbed::shortcode_hash() Get hash of attributes.
-	 * @uses Blazer_Six_Gist_oEmbed::transient_key() Transient key name.
-	 * @uses Blazer_Six_Gist_oEmbed::debug_log() Potentially log a debug message.
-	 * @uses Blazer_Six_Gist_oEmbed::debug_log() Gist retrieval failure string.
+	 * @uses GistPress::rebuild_shortcode() Rebuild shortcode string.
+	 * @uses GistPress::standardize_attributes() Set defaults and sanitize.
+	 * @uses GistPress::shortcode_hash() Get hash of attributes.
+	 * @uses GistPress::transient_key() Transient key name.
+	 * @uses GistPress::debug_log() Potentially log a debug message.
+	 * @uses GistPress::debug_log() Gist retrieval failure string.
 	 *
 	 * @param array $rawattr Raw attributes of the shortcode.
 	 *
@@ -191,7 +191,7 @@ class Blazer_Six_Gist_oEmbed {
 
 		// Bail if the ID is not set.
 		if ( empty( $attr['id'] ) ) {
-			$this->debug_log( __( 'Shortcode did not have a required id attribute.', 'blazersix-gist-oembed' ), $shortcode_hash );
+			$this->debug_log( __( 'Shortcode did not have a required id attribute.', 'gistpress' ), $shortcode_hash );
 			return '';
 		}
 
@@ -200,8 +200,8 @@ class Blazer_Six_Gist_oEmbed {
 
 		if ( isset( $post->ID ) ) {
 			if ( is_feed() ) {
-				$html = sprintf( '<a href="%s" target="_blank"><em>%s</em></a>', esc_url( $url ), __( 'View this code snippet on GitHub.', 'blazersix-gist-oembed' ) );
-				return apply_filters( 'blazersix_gist_oembed_feed_html', $html );
+				$html = sprintf( '<a href="%s" target="_blank"><em>%s</em></a>', esc_url( $url ), __( 'View this code snippet on GitHub.', 'gistpress' ) );
+				return apply_filters( 'gistpress_feed_html', $html );
 			}
 
 			$html = $this->get_gist_html( $json_url, $attr );
@@ -213,13 +213,13 @@ class Blazer_Six_Gist_oEmbed {
 			// If there was a result, return it.
 			if ( $html ) {
 				if ( $attr['embed_stylesheet'] ) {
-					wp_enqueue_style( 'github-gist' );
+					wp_enqueue_style( 'gistpress' );
 				}
 
-				$html = apply_filters( 'blazersix_gist_oembed_html', $html, $url, $attr, $post->ID );
+				$html = apply_filters( 'gistpress_html', $html, $url, $attr, $post->ID );
 
 				foreach ( $attr as $key => $value ) {
-					$message  = '<strong>' . $key . __(' (shortcode attribute)', 'blazersix-gist-oembed') . ':</strong> ';
+					$message  = '<strong>' . $key . __(' (shortcode attribute)', 'gistpress') . ':</strong> ';
 					$message .= is_scalar( $value ) ? $value : print_r( $value, true );
 					$this->debug_log( $message, $shortcode_hash );
 				}
@@ -357,7 +357,7 @@ class Blazer_Six_Gist_oEmbed {
 
 			if ( $html && $this->unknown() != $html ) {
 				$html = $this->process_gist_html( $html, $args );
-				$this->debug_log( __( '<strong>Raw Source:</strong> Transient Cache', 'blazersix-gist-oembed' ), $shortcode_hash );
+				$this->debug_log( __( '<strong>Raw Source:</strong> Transient Cache', 'gistpress' ), $shortcode_hash );
 			} else {
 				// Retrieve raw html from Gist JSON endpoint.
 				$json = $this->fetch_gist( $url );
@@ -371,13 +371,13 @@ class Blazer_Six_Gist_oEmbed {
 
 					$html = $this->process_gist_html( $json->div, $args );
 
-					$this->debug_log( __( '<strong>Raw Source:</strong> Remote JSON Endpoint - ', 'blazersix-gist-oembed' ) . $url, $shortcode_hash );
-					$this->debug_log( __( '<strong>Output Source:</strong> Processed the raw source.', 'blazersix-gist-oembed' ), $shortcode_hash );
+					$this->debug_log( __( '<strong>Raw Source:</strong> Remote JSON Endpoint - ', 'gistpress' ) . $url, $shortcode_hash );
+					$this->debug_log( __( '<strong>Output Source:</strong> Processed the raw source.', 'gistpress' ), $shortcode_hash );
 				}
 
 				// Update the style sheet reference.
 				if ( ! empty( $json->stylesheet ) ) {
-					update_option( 'blazersix_gist_oembed_stylesheet', $json->stylesheet );
+					update_option( 'gistpress_stylesheet', $json->stylesheet );
 				}
 			}
 
@@ -391,21 +391,21 @@ class Blazer_Six_Gist_oEmbed {
 				// Cache the fallback for an hour.
 				$transient_expire = 3600; // 60 * 60 = 1 hour
 
-				$this->debug_log( __( '<strong>Raw Source:</strong> Post Meta Fallback', 'blazersix-gist-oembed' ), $shortcode_hash );
-				$this->debug_log( __( '<strong>Output Source:</strong> Processed Raw Source', 'blazersix-gist-oembed' ), $shortcode_hash );
+				$this->debug_log( __( '<strong>Raw Source:</strong> Post Meta Fallback', 'gistpress' ), $shortcode_hash );
+				$this->debug_log( __( '<strong>Output Source:</strong> Processed Raw Source', 'gistpress' ), $shortcode_hash );
 			} elseif ( $this->unknown() == $html ) {
-				$this->debug_log( '<strong style="color: #e00">' . __( 'Remote call and transient failed and fallback was empty.', 'blazersix-gist-oembed' ) . '</strong>', $shortcode_hash );
+				$this->debug_log( '<strong style="color: #e00">' . __( 'Remote call and transient failed and fallback was empty.', 'gistpress' ) . '</strong>', $shortcode_hash );
 			}
 
 			// Cache the processed HTML.
 			set_transient( $transient_key, $html, $transient_expire );
 		} else {
-			$this->debug_log( __( '<strong>Output Source:</strong> Transient Cache', 'blazersix-gist-oembed' ), $shortcode_hash );
+			$this->debug_log( __( '<strong>Output Source:</strong> Transient Cache', 'gistpress' ), $shortcode_hash );
 		}
 
-		$this->debug_log( '<strong>' . __( 'JSON Endpoint:', 'blazersix-gist-oembed' ) . '</strong> ' . $url, $shortcode_hash );
-		$this->debug_log( '<strong>' . __( 'Raw Key (Transient & Post Meta):', 'blazersix-gist-oembed' ) . '</strong> ' . $raw_key, $shortcode_hash );
-		$this->debug_log( '<strong>' . __( 'Processed Output Key (Transient):', 'blazersix-gist-oembed' ) . '</strong> ' . $transient_key, $shortcode_hash );
+		$this->debug_log( '<strong>' . __( 'JSON Endpoint:', 'gistpress' ) . '</strong> ' . $url, $shortcode_hash );
+		$this->debug_log( '<strong>' . __( 'Raw Key (Transient & Post Meta):', 'gistpress' ) . '</strong> ' . $raw_key, $shortcode_hash );
+		$this->debug_log( '<strong>' . __( 'Processed Output Key (Transient):', 'gistpress' ) . '</strong> ' . $transient_key, $shortcode_hash );
 
 		return $html;
 	}
@@ -444,7 +444,7 @@ class Blazer_Six_Gist_oEmbed {
 	public function process_gist_html( $html, array $args ) {
 		// Remove the line number cell if it has been disabled.
 		if ( ! $args['show_line_numbers'] ) {
-			$html = preg_replace( '#<td class="line_numbers">.*?</td>#s', '', $html );
+			$html = preg_replace( '#<td class="line-numbers">.*?</td>#s', '', $html );
 		}
 
 		// Remove the meta section if it has been disabled.
@@ -452,7 +452,7 @@ class Blazer_Six_Gist_oEmbed {
 			$html = preg_replace( '#<div class="gist-meta">.*?</div>#s', '', $html );
 		}
 
-		$lines_pattern = '#(<td class="line_data"[^>]+>)(.+?)</td>#s';
+		$lines_pattern = '#(<pre class="line-pre"[^>]*>)(.+?)</pre>#s';
 		preg_match( $lines_pattern, $html, $lines_matches );
 
 		if ( ! empty( $lines_matches[2] ) ) {
@@ -467,8 +467,8 @@ class Blazer_Six_Gist_oEmbed {
 			}
 
 			// Extract and cleanup the individual lines from the Gist HTML into an array for processing.
-			$lines = trim( $lines_matches[2] );
-			$lines = preg_split( '#</pre>[\s]*<pre>#', substr( $lines, 5, strlen( $lines ) - 11 ) );
+			$lines = preg_replace( '#<div[^>]+>#', '', trim( $lines_matches[2] ), 1 );
+			$lines = preg_split( '#</div>[\s]*<div[^>]+>#', substr( $lines, 0, strlen( $lines ) - 6 ) );
 
 			foreach ( $lines as $key => $line ) {
 				// Remove lines if they're not in the specified range and continue.
@@ -478,25 +478,25 @@ class Blazer_Six_Gist_oEmbed {
 				}
 
 				// Add classes for styling.
-				$classes = array( 'pre-line' );
-				$classes[] = ( $key % 2 ) ? 'pre-line-odd' : 'pre-line-even';
+				$classes = array( 'line' );
+				//$classes[] = ( $key % 2 ) ? 'line-odd' : 'line-even';
 				$style = '';
 
 				if ( isset( $highlight[ $key + 1 ] ) ) {
-					$classes[] = 'pre-line-highlight';
+					$classes[] = 'line-highlight';
 
 					if ( ! empty( $args['highlight_color'] ) ) {
 						$style = ' style="background-color: ' . $args['highlight_color'] . ' !important"';
 					}
 				}
 
-				$classes = apply_filters( 'blazersix_gist_oembed_line_classes', $classes );
+				$classes = apply_filters( 'gistpress_line_classes', $classes );
 				$class = ( ! empty( $classes ) && is_array( $classes ) ) ? ' class="' . implode ( ' ', $classes ) . '"' : '';
 
-				$lines[ $key ] = '<pre' . $class . $style . '>' . $line . '</pre>';
+				$lines[ $key ] = '<div' . $class . $style . '>' . $line . '</div>';
 			}
 
-			$replacement = $lines_matches[1] . join( "\n", $lines ) . '</td>';
+			$replacement = $lines_matches[1] . join( '', $lines ) . '</pre>';
 			$html = preg_replace( $lines_pattern, $replacement, $html, 1 );
 		}
 
@@ -516,10 +516,10 @@ class Blazer_Six_Gist_oEmbed {
 	 * @return string Modified HTML.
 	 */
 	public function process_gist_line_numbers( $html, array $range, $start = null ) {
-		$line_num_pattern = '#(<td class="line_numbers">)(.*?)</td>#s';
+		$line_num_pattern = '#(<td class="line-numbers">)(.*?)</td>#s';
 		preg_match( $line_num_pattern, $html, $line_num_matches );
 
-		if ( $line_num_matches[2] ) {
+		if ( ! empty( $line_num_matches[2] ) ) {
 			$start = absint( $start );
 			$lines = array_map( 'trim', explode( "\n", trim( $line_num_matches[2] ) ) );
 
@@ -616,12 +616,12 @@ class Blazer_Six_Gist_oEmbed {
 	 */
 	protected function standardize_attributes( array $rawattr ) {
 		$defaults = apply_filters(
-			'blazersix_gist_shortcode_defaults',
+			'gistpress_shortcode_defaults',
 			array(
-				'embed_stylesheet'  => apply_filters( 'blazersix_gist_oembed_stylesheet_default', true ),
+				'embed_stylesheet'  => apply_filters( 'gistpress_stylesheet_default', true ),
 				'file'              => '',
 				'highlight'         => array(),
-				'highlight_color'   => apply_filters( 'blazersix_gist_oembed_highlight_color', '#ffc' ),
+				'highlight_color'   => apply_filters( 'gistpress_highlight_color', '#ffc' ),
 				'id'                => '',
 				'lines'             => '',
 				'lines_start'       => '',
