@@ -15,6 +15,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 global $wpdb;
 
+delete_option( 'blazersix_gist_oembed_stylesheet' );
 delete_option( 'gistpress_stylesheet' );
 
 // Delete post meta.
