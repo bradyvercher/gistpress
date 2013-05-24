@@ -18,7 +18,7 @@ GitHub provides a method for embedding Gists on websites, but it requires insert
 * Easily debug embedded Gists using a custom panel for the [Debug Bar](http://wordpress.org/extend/plugins/debug-bar/) plugin.
 * A few additional CSS classes are inserted for better styling hooks.
 
-![Embedded Gist Screenshot](https://raw.github.com/bradyvercher/wp-blazer-six-gist-oembed/master/screenshot-1.png)  
+![Embedded Gist Screenshot](https://raw.github.com/bradyvercher/gistpress/master/screenshot-1.png)  
 _Example Gist embed with line number restrictions, a highlighted line, and meta links disabled._
 
 ### Caching ###
@@ -32,7 +32,7 @@ If you decide you don't want to use the plugin, simply uninstall using the "Dele
 ### Upload ###
 
 1. Download the latest tagged archive (choose the "zip" option).
-2. Go to the __Plugins -> Add New__ screen and click the __Upload__ tab.
+2. Go to the __Plugins &rarr; Add New__ screen and click the __Upload__ tab.
 3. Upload the zipped archive directly.
 4. Go to the Plugins screen and click __Activate__.
 
@@ -49,7 +49,7 @@ Check out the Codex for more information [installing plugins manually](http://co
 
 Using git, browse to your `/wp-content/plugins/` directory and clone this repository:
 
-`git clone git@github.com:bradyvercher/wp-blazer-six-gist-oembed.git`
+`git clone git@github.com:bradyvercher/gistpress.git`
 
 Then go to your Plugins screen and click __Activate__.
 
@@ -83,11 +83,57 @@ Or even highlight lines:
 
 `[gist id="9b1307f153f4abe352a4" file="media-control-snippet.php" highlight="7"]`
 
-Maybe you want to disable line numbers and the links included below a Gist:
-
-`[gist id="9b1307f153f4abe352a4" file="media-control-snippet.php" show_line_numbers="0" show_meta="0"]`
-
-There are also attributes for disabling the default stylesheet, changing the highlight color, and specifying a starting point for the line numbers.
+<table><caption><h3>Shortcode Attributes</strong></h3>
+  <thead>
+    <tr>
+      <th>Attribute</th>
+    <th>Description</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong><code>id</code></strong></td>
+      <td>A Gist ID. Required. Secret Gist IDs work, too.</td>
+	  <td><em><code>4204333</code></td>
+    </tr>
+    <tr>
+      <td><strong><code>file</code></strong></td>
+      <td>A filename in a Gist. Required when using the following attributes with a multi-file Gist.</td>
+      <td><em><code>filename.php</code></em></td>
+    </tr>
+	<tr>
+		<td><strong><code>highlight</code></strong></td>
+		<td>Comma-separated list of lines or line ranges to highlight.</td>
+		<td><em><code>1,5-10,13</code></td>
+	</tr>
+	<tr>
+	  <td><strong><code>highlight_color</code></strong></td>
+	  <td>The highlight color. A filter is provided for changing globally.</td>
+	  <td><em><code>#ff0000</code></em></td>
+	</tr>
+    <tr>
+      <td><strong><code>lines</code></strong></td>
+      <td>The range of lines to display.</td>
+	  <td><em><code>2-10</code></em></td>
+    </tr>
+	<tr>
+	  <td><strong><code>lines_start</code></strong></td>
+	  <td>Number to start lines at.</td>
+	  <td><em><code>543</code></em></td>
+	</tr>
+	<tr>
+      <td><strong><code>show_line_numbers</code></strong></td>
+      <td>Whether line numbers should be displayed. Defaults to true.</td>
+	  <td><em><code>0</code> to disable.</em></td>
+    </tr>
+	<tr>
+      <td><strong><code>show_meta</code></strong></td>
+      <td>Whether the meta links following a Gist should be displayed. Defaults to true.</td>
+	  <td><em><code>0</code> to disable.</em></td>
+    </tr>
+  </tbody>
+</table>
 
 ## Notes ##
 
@@ -98,7 +144,7 @@ Some themes may include styles that interfere with the default rules for embedde
 To support line highlighting, an inline style is added by the plugin, however, a class is also added to the line element. Developers can add a CSS rule similar to the following to their theme style sheet in order to change the color:
 
 ```css
-.pre-line-highlight {
+.line-highlight {
     background-color: #ffc !important;
 }
 ```
