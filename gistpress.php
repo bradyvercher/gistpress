@@ -12,7 +12,7 @@
  * Plugin Name: GistPress
  * Plugin URI:  https://github.com/bradyvercher/gistpress
  * Description: Gist oEmbed and shortcode support with caching.
- * Version:     1.1.0
+ * Version:     2.0.0
  * Author:      Blazer Six
  * Author URI:  http://www.blazersix.com/
  * License:     GPL-2.0+
