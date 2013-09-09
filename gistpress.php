@@ -9,16 +9,18 @@
  * @license   GPL-2.0+
  *
  * @wordpress-plugin
- * Plugin Name: GistPress
- * Plugin URI:  https://github.com/bradyvercher/gistpress
- * Description: Gist oEmbed and shortcode support with caching.
- * Version:     2.0.1
- * Author:      Blazer Six
- * Author URI:  http://www.blazersix.com/
- * License:     GPL-2.0+
- * License URI: http://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: gistpress
- * Domain Path: /languages/
+ * Plugin Name:       GistPress
+ * Plugin URI:        https://github.com/bradyvercher/gistpress
+ * Description:       Gist oEmbed and shortcode support with caching.
+ * Version:           2.0.1
+ * Author:            Blazer Six
+ * Author URI:        http://www.blazersix.com/
+ * License:           GPL-2.0+
+ * License URI:       http://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       gistpress
+ * Domain Path:       /languages
+ * GitHub Plugin URI: https://github.com/bradyvercher/gistpress
+ * GitHub Branch:     master
  */
 
 // Instantiate main plugin class.
