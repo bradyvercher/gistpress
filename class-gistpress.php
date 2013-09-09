@@ -497,6 +497,7 @@ class GistPress {
 			}
 
 			$replacement = $lines_matches[1] . join( '', $lines ) . '</pre>';
+			$replacement = $this->preg_replace_quote( $replacement );
 			$html = preg_replace( $lines_pattern, $replacement, $html, 1 );
 		}
 
@@ -700,5 +701,18 @@ class GistPress {
 	 */
 	protected function unknown() {
 		return '{{unknown}}';
+	}
+
+	/**
+	 * Escape a regular expression replacement string.
+	 *
+	 * @since 2.0.2
+	 * @link http://www.procata.com/blog/archives/2005/11/13/two-preg_replace-escaping-gotchas/
+	 *
+	 * @param string $str String to escape.
+	 * @return string
+	 */
+	public function preg_replace_quote( $str ) {
+		return preg_replace( '/(\$|\\\\)(?=\d)/', '\\\\$1', $str );
 	}
 }
