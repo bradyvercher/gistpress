@@ -571,8 +571,8 @@ class GistPress {
 		$this->delete_shortcode_transients = true;
 
 		// Run the shortcodes to clear associated transients.
-		do_shortcode( $post_after->post_content );
-		do_shortcode( $post_before->post_content );
+                apply_filters( 'the_content', $post_after->post_content );
+		apply_filters( 'the_content', $post_before->post_content );
 
 		// Delete raw transients whose keys match a post meta fallback.
 		$keys = get_post_custom_keys( $post_id );
