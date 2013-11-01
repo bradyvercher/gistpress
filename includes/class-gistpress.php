@@ -68,21 +68,18 @@ class GistPress {
 	 * handler is registered to mimic oEmbed functionality, but it relies on
 	 * the shortcode for processing.
 	 *
-	 * File matching is maintained for backward compatibility, but won't work
-	 * for the new Gist "bookmark" URLs. This is because the bookmarks point to
-	 * element IDs which have been sanitized so that both hyphen and period in a
-	 * file name show up as a hyphen e.g. a filename of foo.bar and foo-bar both
-	 * appear in the bookmark URL as foo-bar. That means we currently have no
-	 * way of working out what the actual file name is, so that we can construct
-	 * a correct URL JSON endpoint for getting data about just a single file.
+	 * Supported formats:
 	 *
-	 * Old supported URL Format: https://gist.github.com/{{id}}#file_{{filename}}
-	 * New bookmark URL Format: https://gist.github.com/{{id}}#file-{{file_slug}}
+	 * * Old link: https://gist.github.com/{{id}}#file_{{filename}}
+	 * * Old link with username: https://gist.github.com/{{user}}/{{id}}#file_{{filename}}
+	 * * New bookmark: https://gist.github.com/{{id}}#file-{{file_slug}}
+	 * * New bookmark with username: https://gist.github.com/{{user}}/{{id}}#file-{{sanitized-filename}}
 	 *
 	 * @since 1.1.0
 	 */
 	public function run() {
-		wp_embed_register_handler( 'gist', '#(https://gist\.github\.com/(?:.*/)?([a-z0-9]+))(?:\#file_(.*))?#i', array( $this, 'wp_embed_handler' ) );
+		$oembed_pattern = '#https://gist\.github\.com/(?:.*/)?([a-z0-9]+)(?:\#file([_-])(.*))?#i';
+		wp_embed_register_handler( 'gist', $oembed_pattern, array( $this, 'wp_embed_handler' ) );
 		add_shortcode( 'gist', array( $this, 'shortcode' ) );
 
 		add_action( 'init', array( $this, 'style' ), 15 );
@@ -120,13 +117,16 @@ class GistPress {
 	public function wp_embed_handler( array $matches, array $attr, $url, array $rawattr ) {
 		$shortcode = '[gist';
 
-		if ( isset( $matches[2] ) && ! empty( $matches[2] ) ) {
-			$shortcode .= ' id="' . esc_attr( $matches[2] ) . '"';
+		if ( isset( $matches[1] ) && ! empty( $matches[1] ) ) {
+			$shortcode .= ' id="' . esc_attr( $matches[1] ) . '"';
 		}
 
-		// For backward compatibility.
+		// Make specific to a single file.
 		if ( isset( $matches[3] ) && ! empty( $matches[3] ) ) {
-			$shortcode .= ' file="' . esc_attr( $matches[3] ) . '"';
+			$real_file_name = $this->get_file_name( $matches[3], $matches[2], $matches[1] );
+			if ( $real_file_name ) {
+				$shortcode .= ' file="' . esc_attr( $real_file_name ) . '"';
+			}
 		}
 
 		// This attribute added so we can identify if a oembed URL or direct shortcode was used.
@@ -641,6 +641,58 @@ class GistPress {
 		$attr['lines']             = $this->parse_line_number_arg( $attr['lines'] );
 
 		return $attr;
+	}
+
+	/**
+	 * Try to determine the real file name from a sanitized file name.
+	 *
+	 * The new Gist "bookmark" URLs point to sanitized file names so that both
+	 * hyphen and period in a file name show up as a hyphen e.g. a filename of
+	 * foo.bar and foo-bar both appear in the bookmark URL as foo-bar. The
+	 * correct original filenames are listed in the JSON data for the overall
+	 * Gist, so this method does a call to that, and loops through the listed
+	 * file names to see if it can determine which file was meant.
+	 *
+	 * If a Gist has two files that both resolve to the same sanitized filename,
+	 * then we don't have any way to determine which one the other determined,
+	 * so we just return the first one we find. If that's incorrect, the author
+	 * can use the shortcode approach, which allows a specific file name to be
+	 * used.
+	 *
+	 *
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param  string $sanitized_filename Sanitized filename, such as foo-bar-php.
+	 * @param  string $delimiter          Either underscore or hyphen.
+	 * @param  string $id                 Gist ID.
+	 *
+	 * @return string                     Filename, or empty string if it couldn't be determined.
+	 */
+	protected function get_file_name( $sanitized_filename, $delimiter, $id ) {
+		// Old style link - filename wasn't actually changed
+		if ( '_' === $delimiter ) {
+			return $sanitized_filename;
+		}
+
+		// New style bookmark - filename had . replaced with -
+		// Means we have to go and look up what the filename could have been.
+		$url = 'https://gist.github.com/' . $id . '.json';
+		$json = $this->fetch_gist( $url );
+
+		/**
+		 * @todo If a gist has foo.bar.php and foo-bar.php, then we can't yet determine which was actually wanted,
+		 * since both give the same bookmark URL.
+		 *
+		 * Here, we just return the first one we find.
+		 */
+		foreach ( $json->files as $file ) {
+			if ( str_replace( '.', '-', $file) === $sanitized_filename ) {
+				return $file;
+			}
+		}
+
+		return '';
 	}
 
 	/**
