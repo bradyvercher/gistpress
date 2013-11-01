@@ -183,6 +183,7 @@ class GistPress {
 		// This is set to true when posts are updated.
 		if ( $this->delete_shortcode_transients ) {
 			delete_transient( $this->transient_key( $shortcode_hash ) );
+			delete_transient( $this->gist_files_transient_key( $attr['id'] ) );
 			return;
 		}
 
@@ -659,8 +660,6 @@ class GistPress {
 	 * can use the shortcode approach, which allows a specific file name to be
 	 * used.
 	 *
-	 *
-	 *
 	 * @since 2.1.0
 	 *
 	 * @param  string $sanitized_filename Sanitized filename, such as foo-bar-php.
@@ -670,25 +669,36 @@ class GistPress {
 	 * @return string                     Filename, or empty string if it couldn't be determined.
 	 */
 	protected function get_file_name( $sanitized_filename, $delimiter, $id ) {
-		// Old style link - filename wasn't actually changed
+		// Old style link - filename wasn't actually changed.
 		if ( '_' === $delimiter ) {
 			return $sanitized_filename;
 		}
 
 		// New style bookmark - filename had . replaced with -
 		// Means we have to go and look up what the filename could have been.
-		$url = 'https://gist.github.com/' . $id . '.json';
-		$json = $this->fetch_gist( $url );
+		$transient_key = $this->gist_files_transient_key( $id );
+		$gist_files = get_transient( $transient_key );
 
-		/**
-		 * @todo If a gist has foo.bar.php and foo-bar.php, then we can't yet determine which was actually wanted,
-		 * since both give the same bookmark URL.
-		 *
-		 * Here, we just return the first one we find.
-		 */
-		foreach ( $json->files as $file ) {
-			if ( str_replace( '.', '-', $file) === $sanitized_filename ) {
-				return $file;
+		if ( ! $gist_files ) {
+			$url = 'https://gist.github.com/' . $id . '.json';
+			$json = $this->fetch_gist( $url );
+
+			if ( $json && ! empty( $json->files ) ) {
+				$gist_files = $json->files;
+				set_transient( $transient_key, $gist_files, 604800 ); // 60 * 60 * 24 * 7 = 1 week
+			} else {
+				set_transient( $transient_key, array(), 900 ); // 60 * 15 = 15 minutes
+			}
+		}
+
+		// If a gist has foo.bar.php and foo-bar.php, then we can't yet
+		// determine which was actually wanted, since both give the same
+		// bookmark URL. Here, we just return the first one we find.
+		if ( ! empty( $gist_files ) ) {
+			foreach ( $gist_files as $file ) {
+				if ( str_replace( '.', '-', $file ) === $sanitized_filename ) {
+					return $file;
+				}
 			}
 		}
 
@@ -742,6 +752,19 @@ class GistPress {
 	 */
 	protected function transient_key( $identifier ) {
 		return 'gist_html_' . $identifier;
+	}
+
+	/**
+	 * Get the transient key for a list of a Gist's files.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $id The Gist id.
+	 *
+	 * @return string Transient key name.
+	 */
+	protected function gist_files_transient_key( $gist_id ) {
+		return 'gist_files_' . md5( $gist_id );
 	}
 
 	/**
