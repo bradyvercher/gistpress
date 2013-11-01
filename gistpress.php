@@ -45,8 +45,8 @@ $gistpress_logger = new GistPress_Log;
 function gistpress_i18n() {
 	$domain = 'gistpress';
 	$locale = apply_filters( 'plugin_locale', get_locale(), $domain );
-	load_textdomain( $domain, WP_LANG_DIR . '/gistpress/' . $locale . '.mo' );
-	load_plugin_textdomain( $domain, false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+	load_textdomain( $domain, trailingslashit( WP_LANG_DIR ) . $domain . '/' . $domain . '-' . $locale . '.mo' );
+	load_plugin_textdomain( $domain, FALSE, basename( dirname( __FILE__ ) ) . '/languages' );
 }
 add_action( 'init', 'gistpress_i18n' );
 
