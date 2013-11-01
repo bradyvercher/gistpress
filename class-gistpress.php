@@ -602,7 +602,7 @@ class GistPress {
 				$attrs[] = $key . '="' . $value . '"';
 			}
 		}
-		return '[gist ' . implode( ' ', $rawattr ) . ']';
+		return '[gist ' . implode( ' ', $attrs ) . ']';
 	}
 
 	/**
