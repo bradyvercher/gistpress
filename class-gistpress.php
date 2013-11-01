@@ -572,8 +572,8 @@ class GistPress {
 		$this->delete_shortcode_transients = true;
 
 		// Run the shortcodes to clear associated transients.
-		do_shortcode( $post_after->post_content );
-		do_shortcode( $post_before->post_content );
+		do_shortcode( $GLOBALS['wp_embed']->autoembed( $post_after->post_content ) );
+		do_shortcode( $GLOBALS['wp_embed']->autoembed( $post_before->post_content ) );
 
 		// Delete raw transients whose keys match a post meta fallback.
 		$keys = get_post_custom_keys( $post_id );
@@ -603,7 +603,7 @@ class GistPress {
 				$attrs[] = $key . '="' . $value . '"';
 			}
 		}
-		return '[gist ' . implode( ' ', $rawattr ) . ']';
+		return '[gist ' . implode( ' ', $attrs ) . ']';
 	}
 
 	/**
