@@ -31,27 +31,34 @@ If you decide you don't want to use the plugin, simply uninstall using the "Dele
 
 ### Upload ###
 
-1. Download the latest tagged archive (choose the "zip" option).
-2. Go to the __Plugins &rarr; Add New__ screen and click the __Upload__ tab.
-3. Upload the zipped archive directly.
-4. Go to the Plugins screen and click __Activate__.
+1. Download the [latest release](https://github.com/bradyvercher/gistpress/archive/master.zip) from GitHub.
+2. Go to the __Plugins &rarr; Add New__ screen in your WordPress admin panel and click the __Upload__ tab at the top.
+3. Upload the zipped archive.
+4. Click the __Activate Plugin__ link after installation completes.
 
 ### Manual ###
 
-1. Download the latest tagged archive (choose the "zip" option).
+1. Download the [latest release](https://github.com/bradyvercher/gistpress/archive/master.zip) from GitHub.
 2. Unzip the archive.
-3. Copy the folder to your `/wp-content/plugins/` directory.
-4. Go to the Plugins screen and click __Activate__.
+3. Copy the folder to `/wp-content/plugins/`.
+4. Go to the __Plugins__ screen in your WordPress admin panel and click the __Activate__ link under GistPress.
 
-Check out the Codex for more information [installing plugins manually](http://codex.wordpress.org/Managing_Plugins#Manual_Plugin_Installation).
+Read the Codex for more information about [installing plugins manually](http://codex.wordpress.org/Managing_Plugins#Manual_Plugin_Installation).
 
 ### Git ###
 
-Using git, browse to your `/wp-content/plugins/` directory and clone this repository:
+Clone this repository in `/wp-content/plugins/`:
 
 `git clone git@github.com:bradyvercher/gistpress.git`
 
-Then go to your Plugins screen and click __Activate__.
+Then go to the __Plugins__ screen in your WordPress admin panel and click the __Activate__ link under GistPress.
+
+## Updating ##
+
+Although it's not a regular occurrence, GitHub may introduce new features or changes that break the way this plugin works. In such cases, it's important to receive notifications and be able to easily update with the latest fixes. Fortunately, there are a couple of options you can install to manage updates from GitHub-hosted plugins:
+
+* [Git Plugin Updates](https://github.com/brainstormmedia/git-plugin-updates)
+* [GitHub Updater](https://github.com/afragen/github-updater)
 
 ## Usage ##
 
@@ -63,15 +70,15 @@ Insert the URL to a Gist on its own line like this (don't link it up):
 
 That's it!
 
-_Notice that is a URL for a secret Gist? Of course URLs for public Gists work, too._
+_Notice that URL is for a secret Gist? Of course URLs for public Gists work, too._
 
 ### Shortcode ###
 
-Using the URL from above as an example, the shortcode equivalent would look like this:
+Using the same URL from above, the shortcode equivalent would look like this:
 
 `[gist id="9b1307f153f4abe352a4"]`
 
-In both cases, that would embed all four files that are included in the example Gist, but with the shortcode, you have the option to limit the display to a single file by specifiying its name:
+In both cases, that will embed all four files in the example Gist, however, with the shortcode, you have the option to limit the display to a single file by specifiying its name:
 
 `[gist id="9b1307f153f4abe352a4" file="media-control-snippet.php"]`
 
