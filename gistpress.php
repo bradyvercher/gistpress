@@ -25,13 +25,13 @@
 
 // Instantiate main plugin class.
 if ( ! class_exists( 'GistPress' ) ) {
-	require( plugin_dir_path( __FILE__ ) . 'class-gistpress.php' );
+	require( plugin_dir_path( __FILE__ ) . 'includes/class-gistpress.php' );
 }
 $gistpress = new GistPress;
 
 // Instantiate logging class.
 if ( ! class_exists( 'GistPress_Log' ) ) {
-	require( plugin_dir_path( __FILE__ ) . 'class-gistpress-log.php' );
+	require( plugin_dir_path( __FILE__ ) . 'includes/class-gistpress-log.php' );
 }
 $gistpress_logger = new GistPress_Log;
 
@@ -79,7 +79,7 @@ function gistpress_add_debug_bar_panel( array $panels ) {
 
 	if ( ! is_admin() ) {
 		if ( ! class_exists( 'GistPress_Debug_Bar_Panel' ) ) {
-			require( plugin_dir_path( __FILE__ ) . 'class-gistpress-debug-bar-panel.php' );
+			require( plugin_dir_path( __FILE__ ) . 'includes/class-gistpress-debug-bar-panel.php' );
 		}
 
 		$panels[] = new GistPress_Debug_Bar_Panel( $gistpress_logger );
