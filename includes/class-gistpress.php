@@ -171,8 +171,6 @@ class GistPress {
 	 * @return string HTML content to display the Gist.
 	 */
 	public function shortcode( array $rawattr ) {
-		global $post;
-
 		$shortcode = $this->rebuild_shortcode( $rawattr );
 
 		$attr = $this->standardize_attributes( $rawattr );
@@ -199,35 +197,33 @@ class GistPress {
 		$url = 'https://gist.github.com/' . $attr['id'];
 		$json_url = $url . '.json';
 
-		if ( isset( $post->ID ) ) {
-			if ( is_feed() ) {
-				$html = sprintf( '<a href="%s" target="_blank"><em>%s</em></a>', esc_url( $url ), __( 'View this code snippet on GitHub.', 'gistpress' ) );
-				return apply_filters( 'gistpress_feed_html', $html );
+		if ( is_feed() ) {
+			$html = sprintf( '<a href="%s" target="_blank"><em>%s</em></a>', esc_url( $url ), __( 'View this code snippet on GitHub.', 'gistpress' ) );
+			return apply_filters( 'gistpress_feed_html', $html );
+		}
+
+		$html = $this->get_gist_html( $json_url, $attr );
+
+		if ( $this->unknown() === $html ) {
+			return make_clickable( $url );
+		}
+
+		// If there was a result, return it.
+		if ( $html ) {
+			if ( $attr['embed_stylesheet'] ) {
+				wp_enqueue_style( 'gistpress' );
 			}
 
-			$html = $this->get_gist_html( $json_url, $attr );
+			$html = apply_filters( 'gistpress_html', $html, $url, $attr, get_the_ID() );
 
-			if ( $this->unknown() === $html ) {
-				return make_clickable( $url );
+			foreach ( $attr as $key => $value ) {
+				$message  = '<strong>' . $key . __(' (shortcode attribute)', 'gistpress') . ':</strong> ';
+				$message .= is_scalar( $value ) ? $value : print_r( $value, true );
+				$this->debug_log( $message, $shortcode_hash );
 			}
+			$this->debug_log( '<strong>Gist:</strong><br />' . $html, $shortcode_hash );
 
-			// If there was a result, return it.
-			if ( $html ) {
-				if ( $attr['embed_stylesheet'] ) {
-					wp_enqueue_style( 'gistpress' );
-				}
-
-				$html = apply_filters( 'gistpress_html', $html, $url, $attr, $post->ID );
-
-				foreach ( $attr as $key => $value ) {
-					$message  = '<strong>' . $key . __(' (shortcode attribute)', 'gistpress') . ':</strong> ';
-					$message .= is_scalar( $value ) ? $value : print_r( $value, true );
-					$this->debug_log( $message, $shortcode_hash );
-				}
-				$this->debug_log( '<strong>Gist:</strong><br />' . $html, $shortcode_hash );
-
-				return $html;
-			}
+			return $html;
 		}
 
 		return '';
@@ -339,8 +335,6 @@ class GistPress {
 	 * @return string Gist HTML or {{unknown}} if it couldn't be determined.
 	 */
 	public function get_gist_html( $url, array $args ) {
-		global $post;
-
 		// Add a specific file from a Gist to the URL.
 		if ( ! empty( $args['file'] ) ) {
 			$url = add_query_arg( 'file', urlencode( $args['file'] ), $url );
@@ -368,7 +362,7 @@ class GistPress {
 
 					// Update the post meta fallback.
 					// @link http://core.trac.wordpress.org/ticket/21767
-					update_post_meta( $post->ID, $raw_key, addslashes( $json->div ) );
+					update_post_meta( get_the_ID(), $raw_key, addslashes( $json->div ) );
 
 					$html = $this->process_gist_html( $json->div, $args );
 
@@ -385,7 +379,7 @@ class GistPress {
 			// Failures are cached, too. Update the post to attempt to fetch again.
 			$html = ( $html ) ? $html : $this->unknown();
 
-			if ( $this->unknown() == $html && ( $fallback = get_post_meta( $post->ID, $raw_key, true ) ) ) {
+			if ( $this->unknown() == $html && ( $fallback = get_post_meta( get_the_ID(), $raw_key, true ) ) ) {
 				// Return the fallback instead of the string representing unknown.
 				$html = $this->process_gist_html( $fallback, $args );
 
