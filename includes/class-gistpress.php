@@ -348,7 +348,7 @@ class GistPress {
 
 		if ( empty( $html ) ) {
 			$html = get_transient( $raw_key );
-			$transient_expire = 86400; // 60 * 60 * 24 = 1 day
+			$transient_expire = DAY_IN_SECONDS;
 
 			if ( $html && $this->unknown() != $html ) {
 				$html = $this->process_gist_html( $html, $args );
@@ -384,7 +384,7 @@ class GistPress {
 				$html = $this->process_gist_html( $fallback, $args );
 
 				// Cache the fallback for an hour.
-				$transient_expire = 3600; // 60 * 60 = 1 hour
+				$transient_expire = HOUR_IN_SECONDS;
 
 				$this->debug_log( __( '<strong>Raw Source:</strong> Post Meta Fallback', 'gistpress' ), $shortcode_hash );
 				$this->debug_log( __( '<strong>Output Source:</strong> Processed Raw Source', 'gistpress' ), $shortcode_hash );
@@ -679,9 +679,9 @@ class GistPress {
 
 			if ( $json && ! empty( $json->files ) ) {
 				$gist_files = $json->files;
-				set_transient( $transient_key, $gist_files, 604800 ); // 60 * 60 * 24 * 7 = 1 week
+				set_transient( $transient_key, $gist_files, WEEK_IN_SECONDS );
 			} else {
-				set_transient( $transient_key, array(), 900 ); // 60 * 15 = 15 minutes
+				set_transient( $transient_key, array(), MINUTE_IN_SECONDS * 15 );
 			}
 		}
 
