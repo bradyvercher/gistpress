@@ -378,7 +378,7 @@ class GistPress {
 
 				// Update the style sheet reference.
 				if ( ! empty( $json->stylesheet ) ) {
-					update_option( 'gistpress_stylesheet', 'https://gist.github.com' . $json->stylesheet );
+					update_option( 'gistpress_stylesheet', $json->stylesheet );
 				}
 			}
 
