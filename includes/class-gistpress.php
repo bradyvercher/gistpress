@@ -199,6 +199,14 @@ class GistPress {
 
 		if ( is_feed() ) {
 			$html = sprintf( '<a href="%s" target="_blank"><em>%s</em></a>', esc_url( $url ), __( 'View this code snippet on GitHub.', 'gistpress' ) );
+			
+			/**
+			 * Filter what is shown in feeds.
+			 * 
+			 * @since 2.0.0
+			 * 
+			 * @param string $html Markup to show in feeds.
+			 */
 			return apply_filters( 'gistpress_feed_html', $html );
 		}
 
@@ -214,6 +222,16 @@ class GistPress {
 				wp_enqueue_style( 'gistpress' );
 			}
 
+			/**
+			 * Filter the output HTML.
+			 * 
+			 * @since 2.0.0
+			 * 
+			 * @param string $html The output HTML.
+			 * @param string $url  The URL to the Gist.
+			 * @param array  $attr Shortcode attributes, standardized.
+			 * @param int    $id   Post ID.
+			 */
 			$html = apply_filters( 'gistpress_html', $html, $url, $attr, get_the_ID() );
 
 			foreach ( $attr as $key => $value ) {
@@ -485,6 +503,13 @@ class GistPress {
 					}
 				}
 
+				/**
+				 * Filter the classes applied to a line of the Gist.
+				 * 
+				 * @since 2.0.0
+				 * 
+				 * @param array $classes List of HTML class values.
+				 */
 				$classes = apply_filters( 'gistpress_line_classes', $classes );
 				$class = ( ! empty( $classes ) && is_array( $classes ) ) ? ' class="' . implode ( ' ', $classes ) . '"' : '';
 
@@ -611,12 +636,47 @@ class GistPress {
 	 * @return array Standardized and sanitized shortcode attributes.
 	 */
 	protected function standardize_attributes( array $rawattr ) {
+		/**
+		 * Filter the shortcode attributes defaults.
+		 * 
+		 * @since 2.0.0
+		 * 
+		 * @param array $gistpress_shortcode_defaults {
+		 * 	Shortcode attributes defaults.
+		 * 
+		 * 	@type bool   $embed_stylesheet  Filterable value to include style sheet or not.
+		 * 	@type string $file              File name within gist.
+		 * 	@type array  $highlight         Lines to highlight.
+		 * 	@type string $highlight_color   Filterable hex color code.
+		 * 	@type string $id                Gist ID.
+		 * 	@type int    $lines             Number of lines to show.
+		 * 	@type int    $lines_start       Which line number to start from.
+		 * 	@type bool   $show_line_numbers Show line numbers or not, default true.
+		 * 	@type bool   $show_meta         Show meta information or not, default true.
+		 * }
+		 */
 		$defaults = apply_filters(
 			'gistpress_shortcode_defaults',
 			array(
+
+				/**
+				 * Filter to include the style sheet or not.
+				 *
+				 * @since 2.0.0
+				 *
+				 * @param bool $gistpress_stylesheet_default Default is true.
+				 */
 				'embed_stylesheet'  => apply_filters( 'gistpress_stylesheet_default', true ),
 				'file'              => '',
 				'highlight'         => array(),
+
+				/**
+				 * Filter to set highlight color.
+				 *
+				 * @since 2.0.0
+				 *
+				 * @param string $gistpress_highlight_color Hex color code, default is `#ffc`.
+				 */
 				'highlight_color'   => apply_filters( 'gistpress_highlight_color', '#ffc' ),
 				'id'                => '',
 				'lines'             => '',
