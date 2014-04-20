@@ -4,21 +4,21 @@ A WordPress plugin to easily embed Gists via oEmbed or shortcode.
 
 __Contributors:__ [Brady Vercher](https://github.com/bradyvercher), [Gary Jones](https://github.com/GaryJones)  
 __Requires:__ 3.5.0  
-__Tested up to:__ 3.9  
+__Tested up to:__ 3.9.0  
 __License:__ [GPL-2.0+](http://www.gnu.org/licenses/gpl-2.0.html)
 
 GitHub provides a method for embedding Gists on websites, but it requires inserting a `<script>` tag, which can become mangled or stripped from the TinyMCE editor used in WordPress. Instead, this plugin allows you to embed a Gist by simply inserting its URL into the editor for oEmbed-like support, or via a shortcode for more refined control.
 
 ## Features ##
 
-* Better integration with the visual editor in WordPress since `<script>` tags aren't used, which also allows visitors without javascript to view your code snippets.
+* Better integration with the visual editor in WordPress since `<script>` tags aren't used, which also allows visitors without JavaScript to view your code snippets.
 * Users viewing your content in a feed reader will see a link directly to the Gist instead of nothing.
 * Limit which lines from a Gist are displayed. Helpful for breaking down code so it can be easily explained.
 * Highlight specific lines within a Gist to call attention to them.
 * Easily debug embedded Gists using a custom panel for the [Debug Bar](http://wordpress.org/extend/plugins/debug-bar/) plugin.
 * A few additional CSS classes are inserted for better styling hooks.
 
-![Embedded Gist Screenshot](https://raw.github.com/bradyvercher/gistpress/master/screenshot-1.png)  
+![Embedded Gist Screenshot](screenshot-1.png)  
 _Example Gist embed with line number restrictions, a highlighted line, and meta links disabled._
 
 ### Caching ###
