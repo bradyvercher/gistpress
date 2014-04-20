@@ -164,9 +164,7 @@ add_filter( 'gistpress_highlight_color', '__return_false' );
 
 ## Changelog
 
-### 2.0.3
-
-* Fixed the reference to the style sheet broken by a change in the API.
+See [CHANGELOG](CHANGELOG.md).
 
 ## Credits ##
 
