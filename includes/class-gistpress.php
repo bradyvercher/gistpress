@@ -641,18 +641,26 @@ class GistPress {
 		 * 
 		 * @since 2.0.0
 		 * 
+		 * @see standardize_attributes()
+		 * 
 		 * @param array $gistpress_shortcode_defaults {
 		 * 	Shortcode attributes defaults.
 		 * 
-		 * 	@type bool   $embed_stylesheet  Filterable value to include style sheet or not.
-		 * 	@type string $file              File name within gist.
-		 * 	@type array  $highlight         Lines to highlight.
-		 * 	@type string $highlight_color   Filterable hex color code.
-		 * 	@type string $id                Gist ID.
-		 * 	@type int    $lines             Number of lines to show.
-		 * 	@type int    $lines_start       Which line number to start from.
-		 * 	@type bool   $show_line_numbers Show line numbers or not, default true.
-		 * 	@type bool   $show_meta         Show meta information or not, default true.
+		 * 	@type bool   $embed_stylesheet  Filterable value to include style sheet or not. Default is true
+		 *                                      to include it.
+		 * 	@type string $file              File name within gist. Default is an empty string, indicating
+		 *                                      all files.
+		 * 	@type array  $highlight         Lines to highlight. Default is empty array, to highlight
+		 *                                      no lines.
+		 * 	@type string $highlight_color   Filterable hex color code. Default is #ffc.
+		 * 	@type string $id                Gist ID. Non-optional.
+		 * 	@type string $lines             Number of lines to show. Default is empty string, indicating
+		 *                                      all lines in the gist.
+		 * 	@type string $lines_start       Which line number to start from. Default is empty string,
+		 *                                      indicating line number 1.
+		 * 	@type bool   $show_line_numbers Show line numbers or not, default is true, to show line numbers.
+		 * 	@type bool   $show_meta         Show meta information or not, default is true, to show
+		 *                                      meta information.
 		 * }
 		 */
 		$defaults = apply_filters(
@@ -664,18 +672,20 @@ class GistPress {
 				 *
 				 * @since 2.0.0
 				 *
-				 * @param bool $gistpress_stylesheet_default Default is true.
+				 * @param bool $gistpress_stylesheet_default Include default style sheet or not.
+				 *                                           Default is true, to include it.
 				 */
 				'embed_stylesheet'  => apply_filters( 'gistpress_stylesheet_default', true ),
 				'file'              => '',
 				'highlight'         => array(),
 
 				/**
-				 * Filter to set highlight color.
+				 * Filter highlight color.
 				 *
 				 * @since 2.0.0
 				 *
-				 * @param string $gistpress_highlight_color Hex color code, default is `#ffc`.
+				 * @param string $gistpress_highlight_color Hex color code for highlighting lines.
+				 *                                          Default is `#ffc`.
 				 */
 				'highlight_color'   => apply_filters( 'gistpress_highlight_color', '#ffc' ),
 				'id'                => '',
