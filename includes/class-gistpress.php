@@ -477,7 +477,6 @@ class GistPress {
 			if ( ! empty( $args['highlight'] ) ) {
 				// Flip to use isset() when looping through the lines.
 				$highlight = array_flip( $args['highlight'] );
-                        $no_highlight = true;
 			}
 
 			// Extract and cleanup the individual lines from the Gist HTML into an array for processing.
@@ -496,16 +495,15 @@ class GistPress {
 				//$classes[] = ( $key % 2 ) ? 'line-odd' : 'line-even';
 				$style = '';
 
-				if ( isset( $highlight[ $key + 1 ] ) ) {
+				if ( isset( $highlight[$key + 1] ) ) {
 					$classes[] = 'line-highlight';
 
 					if ( ! empty( $args['highlight_color'] ) ) {
 						$style = ' style="background-color: ' . $args['highlight_color'] . ' !important"';
 					}
+				} elseif ( ! empty( $args['highlight'] ) ) {
+					$classes[] = 'line-no-highlight';
 				}
-                        elseif( isset($no_highlight) ){
-                              $classes[] = 'line-no-highlight';
-                        }
 
 				/**
 				 * Filter the classes applied to a line of the Gist.
