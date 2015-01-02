@@ -1,0 +1,29 @@
+{
+	"name": "bradyvercher/gistpress",
+	"description": "A WordPress plugin to easily embed Gists via oEmbed or shortcode.",
+	"keywords": [
+		"wordpress"
+	],
+	"type": "wordpress-plugin",
+	"homepage": "https://github.com/bradyvercher/gistpress",
+	"license": "GPL-2.0+",
+	"authors": [
+		{
+			"name": "Brady Vercher",
+			"email": "brady@blazersix.com",
+			"homepage": "http://www.blazersix.com/"
+		},
+		{
+			"name" : "Gary Jones",
+			"email" : "gamajo@gamajo.com",
+			"homepage": "http://gamajo.com"
+		}
+	],
+	"support": {
+		"issues": "https://github.com/bradyvercher/gistpress/issues",
+		"source": "https://github.com/bradyvercher/gistpress"
+	},
+	"require": {
+		"composer/installers": "~1.0"
+	}
+}
