@@ -457,7 +457,7 @@ class GistPress {
 	public function process_gist_html( $html, array $args ) {
 		// Remove the line number cell if it has been disabled.
 		if ( ! $args['show_line_numbers'] ) {
-			$html = preg_replace( '#<td class="line-numbers">.*?</td>#s', '', $html );
+			$html = preg_replace( '#<td id="[^"]*" class="blob-num js-line-number" data-line-number="\d+"></td>#s', '', $html );
 		}
 
 		// Remove the meta section if it has been disabled.
@@ -505,9 +505,9 @@ class GistPress {
 
 				/**
 				 * Filter the classes applied to a line of the Gist.
-				 * 
+				 *
 				 * @since 2.0.0
-				 * 
+				 *
 				 * @param array $classes List of HTML class values.
 				 */
 				$classes = apply_filters( 'gistpress_line_classes', $classes );
