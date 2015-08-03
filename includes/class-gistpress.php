@@ -199,12 +199,12 @@ class GistPress {
 
 		if ( is_feed() ) {
 			$html = sprintf( '<a href="%s" target="_blank"><em>%s</em></a>', esc_url( $url ), __( 'View this code snippet on GitHub.', 'gistpress' ) );
-			
+
 			/**
 			 * Filter what is shown in feeds.
-			 * 
+			 *
 			 * @since 2.0.0
-			 * 
+			 *
 			 * @param string $html Markup to show in feeds.
 			 */
 			return apply_filters( 'gistpress_feed_html', $html );
@@ -224,9 +224,9 @@ class GistPress {
 
 			/**
 			 * Filter the output HTML.
-			 * 
+			 *
 			 * @since 2.0.0
-			 * 
+			 *
 			 * @param string $html The output HTML.
 			 * @param string $url  The URL to the Gist.
 			 * @param array  $attr Shortcode attributes, standardized.
@@ -465,60 +465,75 @@ class GistPress {
 			$html = preg_replace( '#<div class="gist-meta">.*?</div>#s', '', $html );
 		}
 
-		$lines_pattern = '#(<pre class="line-pre"[^>]*>)(.+?)</pre>#s';
-		preg_match( $lines_pattern, $html, $lines_matches );
+		if ( ! class_exists( 'DOMDocument' ) ) {
+			return $html;
+		}
 
-		if ( ! empty( $lines_matches[2] ) ) {
-			// Restrict the line number display if a range has been specified.
-			if ( $args['show_line_numbers'] && ( ( $args['lines']['min'] && $args['lines']['max'] ) || ! empty( $args['lines_start'] ) ) ) {
-				$html = $this->process_gist_line_numbers( $html, $args['lines'], $args['lines_start'] );
+		$dom = DOMDocument::loadHTML( $html );
+
+		// @todo Make this more unique?
+		$lines = $dom->getElementsByTagName( 'tr' );
+
+		if ( ! empty( $args['highlight'] ) ) {
+			// Flip to use isset() when looping through the lines.
+			$highlight = array_flip( $args['highlight'] );
+		}
+
+		$lines_to_remove = array();
+		foreach ( $lines as $key => $line ) {
+			// Remove lines if they're not in the specified range and continue.
+			if (
+				( $args['lines']['min'] && $key < $args['lines']['min'] - 1 ) ||
+				( $args['lines']['max'] && $key > $args['lines']['max'] - 1 )
+			) {
+				$lines_to_remove[] = $line;
+				continue;
 			}
 
-			if ( ! empty( $args['highlight'] ) ) {
-				// Flip to use isset() when looping through the lines.
-				$highlight = array_flip( $args['highlight'] );
-			}
+			// Add classes for styling.
+			$classes = array( 'line' );
 
-			// Extract and cleanup the individual lines from the Gist HTML into an array for processing.
-			$lines = preg_replace( '#<div[^>]+>#', '', trim( $lines_matches[2] ), 1 );
-			$lines = preg_split( '#</div>[\s]*<div[^>]+>#', substr( $lines, 0, strlen( $lines ) - 6 ) );
+			if ( isset( $highlight[ $key + 1 ] ) ) {
+				$classes[] = 'line-highlight';
 
-			foreach ( $lines as $key => $line ) {
-				// Remove lines if they're not in the specified range and continue.
-				if ( ( $args['lines']['min'] && $key < $args['lines']['min'] - 1 ) || ( $args['lines']['max'] && $key > $args['lines']['max'] - 1 ) ) {
-					unset( $lines[ $key ] );
-					continue;
-				}
+				if ( ! empty( $args['highlight_color'] ) ) {
+					$style = 'background-color: ' . $args['highlight_color'] . ' !important';
 
-				// Add classes for styling.
-				$classes = array( 'line' );
-				//$classes[] = ( $key % 2 ) ? 'line-odd' : 'line-even';
-				$style = '';
-
-				if ( isset( $highlight[ $key + 1 ] ) ) {
-					$classes[] = 'line-highlight';
-
-					if ( ! empty( $args['highlight_color'] ) ) {
-						$style = ' style="background-color: ' . $args['highlight_color'] . ' !important"';
+					foreach ( $line->getElementsByTagName( 'td' ) as $cell ) {
+						$value = $cell->getAttribute( 'style' );
+						$value = empty( $value ) ? $style : $value . ';' . $style;
+						$cell->setAttribute( 'style', $value );
 					}
 				}
-
-				/**
-				 * Filter the classes applied to a line of the Gist.
-				 *
-				 * @since 2.0.0
-				 *
-				 * @param array $classes List of HTML class values.
-				 */
-				$classes = apply_filters( 'gistpress_line_classes', $classes );
-				$class = ( ! empty( $classes ) && is_array( $classes ) ) ? ' class="' . implode ( ' ', $classes ) . '"' : '';
-
-				$lines[ $key ] = '<div' . $class . $style . '>' . $line . '</div>';
 			}
 
-			$replacement = $lines_matches[1] . join( '', $lines ) . '</pre>';
-			$replacement = $this->preg_replace_quote( $replacement );
-			$html = preg_replace( $lines_pattern, $replacement, $html, 1 );
+			/**
+			 * Filter the classes applied to a line of the Gist.
+			 *
+			 * @since 2.0.0
+			 *
+			 * @param array $classes List of HTML class values.
+			 */
+			$classes = apply_filters( 'gistpress_line_classes', $classes );
+			$class = ( ! empty( $classes ) && is_array( $classes ) ) ? implode ( ' ', $classes ) : '';
+
+			$value = $line->getAttribute( 'class' );
+			$value = empty( $value ) ? $class : $value . ' ' . $class;
+			$line->setAttribute( 'class', $value );
+		}
+
+		foreach ( $lines_to_remove as $line ) {
+			$line->parentNode->removeChild( $line );
+		}
+
+		$html = $dom->saveHTML();
+
+		// Restrict the line number display if a range has been specified.
+		if (
+			$args['show_line_numbers'] &&
+			( ( $args['lines']['min'] && $args['lines']['max'] ) || ! empty( $args['lines_start'] ) )
+		) {
+			$html = $this->process_gist_line_numbers( $html, $args['lines'], $args['lines_start'] );
 		}
 
 		return $html;
@@ -537,43 +552,19 @@ class GistPress {
 	 * @return string Modified HTML.
 	 */
 	public function process_gist_line_numbers( $html, array $range, $start = null ) {
-		$line_num_pattern = '#(<td class="line-numbers">)(.*?)</td>#s';
-		preg_match( $line_num_pattern, $html, $line_num_matches );
+		$start = empty( $start ) ? absint( $range['min'] ) : absint( $start );
 
-		if ( ! empty( $line_num_matches[2] ) ) {
-			$start = absint( $start );
-			$lines = array_map( 'trim', explode( "\n", trim( $line_num_matches[2] ) ) );
+		$dom = DOMDocument::loadHTML( $html );
+		$lines = $dom->getElementsByTagName( 'tr' );
 
-			if( ! $start && $range['min'] && $range['max'] ) {
-				$line_numbers = array_slice( $lines, $range['min'] - 1, $range['max'] - $range['min'] + 1 );
-			} else {
-				// Determine how many lines should be shown.
-				$range_length = count( $lines );
-				if ( $range['min'] && $range['max'] ) {
-					$range_length = $range['max'] - $range['min'] + 1;
-					$start = ( $start ) ? $start : $range['min'];
-				}
-
-				// Create a template with a placeholder for the line number.
-				preg_match( '#<span rel="([^"]+)[0-9]+?"#', $lines[0], $attr_matches );
-				if ( ! empty( $attr_matches[1] ) ) {
-					$template = sprintf( '<span rel="%1$s%2$s" id="%1$s%2$s">%2$s</span>', esc_attr( $attr_matches[1] ), '{{num}}' );
-				} else {
-					$template = '<span>{{num}}</span>';
-				}
-
-				// Generate HTML for the line numbers.
-				$line_numbers = array();
-				for ( $i = $start; $i <= $start + $range_length - 1; $i ++ ) {
-					$line_numbers[] = str_replace( '{{num}}', $i, $template );
-				}
-			}
-
-			$replacement = $line_num_matches[1] . join( "\n", $line_numbers ) . '</td>';
-			$html = preg_replace( $line_num_pattern, $replacement, $html, 1 );
+		foreach ( $lines as $i => $line ) {
+			$line
+				->getElementsByTagName( 'td' )
+				->item( 0 )
+				->setAttribute( 'data-line-number', $start + $i );
 		}
 
-		return $html;
+		return $dom->saveHTML();
 	}
 
 	/**
@@ -638,14 +629,14 @@ class GistPress {
 	protected function standardize_attributes( array $rawattr ) {
 		/**
 		 * Filter the shortcode attributes defaults.
-		 * 
+		 *
 		 * @since 2.0.0
-		 * 
+		 *
 		 * @see standardize_attributes()
-		 * 
+		 *
 		 * @param array $gistpress_shortcode_defaults {
 		 * 	Shortcode attributes defaults.
-		 * 
+		 *
 		 * 	@type bool   $embed_stylesheet  Filterable value to include style sheet or not. Default is true
 		 *                                      to include it.
 		 * 	@type string $file              File name within gist. Default is an empty string, indicating
