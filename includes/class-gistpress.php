@@ -469,7 +469,8 @@ class GistPress {
 			return $html;
 		}
 
-		$dom = DOMDocument::loadHTML( $html );
+		$dom = new DOMDocument();
+		$dom->loadHTML( $html );
 
 		// @todo Make this more unique?
 		$lines = $dom->getElementsByTagName( 'tr' );
@@ -554,7 +555,8 @@ class GistPress {
 	public function process_gist_line_numbers( $html, array $range, $start = null ) {
 		$start = empty( $start ) ? absint( $range['min'] ) : absint( $start );
 
-		$dom = DOMDocument::loadHTML( $html );
+		$dom = new DOMDocument();
+		$dom->loadHTML( $html );
 		$lines = $dom->getElementsByTagName( 'tr' );
 
 		foreach ( $lines as $i => $line ) {
