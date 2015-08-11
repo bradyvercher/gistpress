@@ -3,8 +3,8 @@
 A WordPress plugin to easily embed Gists via oEmbed or shortcode.
 
 __Contributors:__ [Brady Vercher](https://github.com/bradyvercher), [Gary Jones](https://github.com/GaryJones)  
-__Requires:__ 3.5.0  
-__Tested up to:__ 3.9.0  
+__Requires:__ 4.0  
+__Tested up to:__ 4.3  
 __License:__ [GPL-2.0+](http://www.gnu.org/licenses/gpl-2.0.html)
 
 GitHub provides a method for embedding Gists on websites, but it requires inserting a `<script>` tag, which can become mangled or stripped from the TinyMCE editor used in WordPress. Instead, this plugin allows you to embed a Gist by simply inserting its URL into the editor for oEmbed-like support, or via a shortcode for more refined control.
@@ -55,10 +55,7 @@ Then go to the __Plugins__ screen in your WordPress admin panel and click the __
 
 ## Updating ##
 
-Although it's not a regular occurrence, GitHub may introduce new features or changes that break the way this plugin works. In such cases, it's important to receive notifications and be able to easily update with the latest fixes. Fortunately, there are a couple of options you can install to manage updates from GitHub-hosted plugins:
-
-* [Git Plugin Updates](https://github.com/brainstormmedia/git-plugin-updates)
-* [GitHub Updater](https://github.com/afragen/github-updater)
+Although it's not a regular occurrence, GitHub may introduce new features or changes that break the way this plugin works. In such cases, it's important to receive notifications and be able to easily update with the latest fixes. Fortunately, you can install the [GitHub Updater](https://github.com/afragen/github-updater) plugin to manage updates from GitHub-hosted plugins.
 
 ## Usage ##
 
