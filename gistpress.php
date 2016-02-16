@@ -27,13 +27,13 @@
 if ( ! class_exists( 'GistPress' ) ) {
 	require( plugin_dir_path( __FILE__ ) . 'includes/class-gistpress.php' );
 }
-$gistpress = new GistPress;
+$GLOBALS['gistpress'] = new GistPress;
 
 // Instantiate logging class.
 if ( ! class_exists( 'GistPress_Log' ) ) {
 	require( plugin_dir_path( __FILE__ ) . 'includes/class-gistpress-log.php' );
 }
-$gistpress_logger = new GistPress_Log;
+$GLOBALS['gistpress_logger'] = new GistPress_Log;
 
 /**
  * Support localization for plugin.
