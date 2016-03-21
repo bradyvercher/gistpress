@@ -420,6 +420,9 @@ class GistPress {
 		$this->debug_log( '<strong>' . __( 'Raw Key (Transient & Post Meta):', 'gistpress' ) . '</strong> ' . $raw_key, $shortcode_hash );
 		$this->debug_log( '<strong>' . __( 'Processed Output Key (Transient):', 'gistpress' ) . '</strong> ' . $transient_key, $shortcode_hash );
 
+		// Strip unneccessary elements from HTML output
+		$html = preg_replace('/^<!DOCTYPE.+?>/i', '', str_ireplace( array('<html>', '</html>', '<body>', '</body>'), '', $html));
+
 		return $html;
 	}
 
