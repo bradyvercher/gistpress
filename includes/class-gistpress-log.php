@@ -4,7 +4,7 @@
  *
  * @package   GistPress
  * @author    Brady Vercher <brady@blazersix.com>
- * @author    Gary Jones <gary@garyjones.co.uk>
+ * @author    Gary Jones
  * @copyright Copyright (c) 2012, Blazer Six, Inc.
  * @license   GPL-2.0+
  */
@@ -23,7 +23,7 @@
  * @see https://github.com/php-fig/log
  *
  * @package GistPress
- * @author Gary Jones <garyy@garyjones.co.uk>
+ * @author Gary Jones
  * @author Brady Vercher <brady@blazersix.com>
  */
 class GistPress_Log {

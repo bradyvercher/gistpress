@@ -4,7 +4,7 @@
  *
  * @package   GistPress
  * @author    Brady Vercher <brady@blazersix.com>
- * @author    Gary Jones <gary@garyjones.co.uk>
+ * @author    Gary Jones
  * @copyright Copyright (c) 2012, Blazer Six, Inc.
  * @license   GPL-2.0+
  */
@@ -14,7 +14,7 @@
  *
  * @package GistPress
  * @author Brady Vercher <brady@blazersix.com>
- * @author Gary Jones <gary@garyjones.co.uk>
+ * @author Gary Jones
  */
 class GistPress {
 	/**
