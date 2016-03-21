@@ -2,9 +2,14 @@
 
 ## [Unreleased]
 
-* Remove `Doctype`, `html` and `body` elements added with DOMDocument.
-* Fix some code standards.
+* Removed `DOCTYPE`, `html` and `body` elements added with DOMDocument.
+* Added `.editorconfig` file.
+* Fixed some code standards.
 * Updated change log.
+* Added Issue and Pull Request templates.
+* Move screenshot into `assets-repo`.
+* Removed / updated author details.
+* Updated "Tested up to" to 4.4.2.
 
 ## [v3.0.1] - 2016-02-16
 
@@ -15,7 +20,7 @@
 * Fixed processing due to a change in the structure of the Gist HTML. `DOMDocument` is now used for parsing HTML. If shortcode attributes don't seem to be working, be sure the [DOM extension](http://php.net/manual/en/intro.dom.php) is available on your server.
 * Removed globals in favor of API wrappers.
 * Used time constants.
-* Updated minimum WP requirement to 3.5.0.
+* Updated minimum WP requirement to 4.0.0.
 * Created `CHANGELOG.md` and linked README to it.
 * Created `CONTRIBUTING.md`.
 * Created `LICENSE`.
