@@ -1,0 +1,23 @@
+<phpunit
+	addUncoveredFilesFromWhitelist="true"
+	backupGlobals="false"
+	bootstrap="tests/bootstrap.php"
+	beStrictAboutOutputDuringTests="true"
+	beStrictAboutTestsThatDoNotTestAnything="true"
+	beStrictAboutTodoAnnotatedTests="true"
+	checkForUnintentionallyCoveredCode="true"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	forceCoversAnnotation="true"
+	processUncoveredFilesFromWhitelist="true"
+	showUncoveredFiles="true"
+	verbose="true"
+>
+	<testsuites>
+		<testsuite>
+			<directory prefix="test-" suffix=".php">./tests/</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>
