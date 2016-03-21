@@ -18,7 +18,7 @@ GitHub provides a method for embedding Gists on websites, but it requires insert
 * Easily debug embedded Gists using a custom panel for the [Debug Bar](http://wordpress.org/extend/plugins/debug-bar/) plugin.
 * A few additional CSS classes are inserted for better styling hooks.
 
-![Embedded Gist Screenshot](screenshot-1.png)  
+![Embedded Gist Screenshot](assets-repo/screenshot-1.png)  
 _Example Gist embed with line number restrictions, a highlighted line, and meta links disabled._
 
 ### Caching ###
