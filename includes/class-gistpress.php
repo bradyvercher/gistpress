@@ -7,8 +7,6 @@
  * @author    Gary Jones <gary@garyjones.co.uk>
  * @copyright Copyright (c) 2012, Blazer Six, Inc.
  * @license   GPL-2.0+
- *
- * @todo Cache the style sheet locally. #22
  */
 
 /**
@@ -19,7 +17,11 @@
  * @author Gary Jones <gary@garyjones.co.uk>
  */
 class GistPress {
-	/** @var object Logger object. */
+	/**
+	 * Logger object.
+	 *
+	 * @var object
+	 */
 	protected $logger = null;
 
 	/**
@@ -42,7 +44,7 @@ class GistPress {
 	 *
 	 * @since 1.1.0
 	 *
-	 * @param object $logger
+	 * @param object $logger Logger object.
 	 */
 	public function set_logger( $logger ) {
 		$this->logger = $logger;
@@ -58,7 +60,7 @@ class GistPress {
 	 * @return object
 	 */
 	public function get_logger() {
-		return $this->$logger;
+		return $this->logger;
 	}
 
 	/**
@@ -100,21 +102,15 @@ class GistPress {
 	 *
 	 * Parses Gist URLs for oEmbed support. Returns the value as a shortcode
 	 * string to let the shortcode method handle processing. The value
-	 * returned also doesn't have wpautop() applied, which is a must for
+	 * returned also does not have wpautop() applied, which is a must for
 	 * source code.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array  $matches Search results against the regex pattern listed in
-	 *                        run().
-	 * @param array  $attr    Associative array of shortcode attributes, merged
-	 *                        with embed handler default attributes.
-	 * @param string $url     The URL attempting to be embedded.
-	 * @param array  $rawattr Associative array of raw shortcode attributes.
-	 *
-	 * @return string Shortcode
+	 * @param array $matches Search results against the regex pattern listed in `run()`.
+	 * @return string Shortcode.
 	 */
-	public function wp_embed_handler( array $matches, array $attr, $url, array $rawattr ) {
+	public function wp_embed_handler( array $matches ) {
 		$shortcode = '[gist';
 
 		if ( isset( $matches[1] ) && ! empty( $matches[1] ) ) {
@@ -167,7 +163,6 @@ class GistPress {
 	 * @uses GistPress::debug_log() Gist retrieval failure string.
 	 *
 	 * @param array $rawattr Raw attributes of the shortcode.
-	 *
 	 * @return string HTML content to display the Gist.
 	 */
 	public function shortcode( array $rawattr ) {
@@ -182,7 +177,8 @@ class GistPress {
 		if ( $this->delete_shortcode_transients ) {
 			delete_transient( $this->transient_key( $shortcode_hash ) );
 			delete_transient( $this->gist_files_transient_key( $attr['id'] ) );
-			return;
+
+			return '';
 		}
 
 		// Log what we're dealing with - title uses original attributes, but hashed against processed attributes.
@@ -235,7 +231,7 @@ class GistPress {
 			$html = apply_filters( 'gistpress_html', $html, $url, $attr, get_the_ID() );
 
 			foreach ( $attr as $key => $value ) {
-				$message  = '<strong>' . $key . __(' (shortcode attribute)', 'gistpress') . ':</strong> ';
+				$message  = '<strong>' . $key . __( ' (shortcode attribute)', 'gistpress' ) . ':</strong> ';
 				$message .= is_scalar( $value ) ? $value : print_r( $value, true );
 				$this->debug_log( $message, $shortcode_hash );
 			}
@@ -253,12 +249,12 @@ class GistPress {
 	 * @since 1.1.0
 	 *
 	 * @param string|int|bool $var Attribute value.
-	 *
 	 * @return bool
 	 */
 	public function shortcode_bool( $var ) {
 		$falsey = array( 'false', '0', 'no', 'n' );
-		return ( ! $var || in_array( strtolower( $var ), $falsey ) ) ? false : true;
+
+		return ( ! $var || in_array( strtolower( $var ), $falsey, true ) ) ? false : true;
 	}
 
 	/**
@@ -268,7 +264,6 @@ class GistPress {
 	 * @since 1.1.0
 	 *
 	 * @param string $line_numbers Comma-separated list of line numbers and ranges.
-	 *
 	 * @return array|null List of line numbers, or null if no line numbers given
 	 */
 	public function parse_highlight_arg( $line_numbers ) {
@@ -299,16 +294,15 @@ class GistPress {
 	 * @since 1.1.0
 	 *
 	 * @param string $line_numbers Range of line numbers separated by a dash.
-	 *
 	 * @return array Associative array with min and max line numbers.
 	 */
 	public function parse_line_number_arg( $line_numbers ) {
 		if ( empty( $line_numbers ) ) {
-			return array( 'min' => 0, 'max' => 0, );
+			return array( 'min' => 0, 'max' => 0 );
 		}
 
 		if ( false === strpos( $line_numbers, '-' ) ) {
-			$range = array_fill_keys( array( 'min', 'max', ), absint( trim( $line_numbers ) ) );
+			$range = array_fill_keys( array( 'min', 'max' ), absint( trim( $line_numbers ) ) );
 		} else {
 			$numbers = array_map( 'absint', array_map( 'trim', explode( '-', $line_numbers ) ) );
 
@@ -329,7 +323,7 @@ class GistPress {
 	 *   Transient,
 	 *   Post meta cache.
 	 *
-	 * When a Gist is intially requested, the HTML is fetched from the JSON
+	 * When a Gist is initially requested, the HTML is fetched from the JSON
 	 * endpoint and cached in a post meta field. It is then processed to limit
 	 * line numbers, highlight specific lines, and add a few extra classes as
 	 * style hooks. The processed HTML is then stored in a transient using a
@@ -349,8 +343,7 @@ class GistPress {
 	 *
 	 * @param string $url   The JSON endpoint for the Gist.
 	 * @param array  $args  List of shortcode attributes.
-	 *
-	 * @return string Gist HTML or {{unknown}} if it couldn't be determined.
+	 * @return string Gist HTML or {{unknown}} if it could not be determined.
 	 */
 	public function get_gist_html( $url, array $args ) {
 		// Add a specific file from a Gist to the URL.
@@ -368,7 +361,7 @@ class GistPress {
 			$html = get_transient( $raw_key );
 			$transient_expire = DAY_IN_SECONDS;
 
-			if ( $html && $this->unknown() != $html ) {
+			if ( $html && $this->unknown() !== $html ) {
 				$html = $this->process_gist_html( $html, $args );
 				$this->debug_log( __( '<strong>Raw Source:</strong> Transient Cache', 'gistpress' ), $shortcode_hash );
 			} else {
@@ -378,8 +371,7 @@ class GistPress {
 				if ( ! empty( $json->div ) ) {
 					set_transient( $raw_key, $json->div, $transient_expire );
 
-					// Update the post meta fallback.
-					// @link http://core.trac.wordpress.org/ticket/21767
+					// Update the post meta fallback. See http://core.trac.wordpress.org/ticket/21767 for details.
 					update_post_meta( get_the_ID(), $raw_key, addslashes( $json->div ) );
 
 					$html = $this->process_gist_html( $json->div, $args );
@@ -397,7 +389,7 @@ class GistPress {
 			// Failures are cached, too. Update the post to attempt to fetch again.
 			$html = ( $html ) ? $html : $this->unknown();
 
-			if ( $this->unknown() == $html && ( $fallback = get_post_meta( get_the_ID(), $raw_key, true ) ) ) {
+			if ( $this->unknown() === $html && ( $fallback = get_post_meta( get_the_ID(), $raw_key, true ) ) ) {
 				// Return the fallback instead of the string representing unknown.
 				$html = $this->process_gist_html( $fallback, $args );
 
@@ -406,8 +398,8 @@ class GistPress {
 
 				$this->debug_log( __( '<strong>Raw Source:</strong> Post Meta Fallback', 'gistpress' ), $shortcode_hash );
 				$this->debug_log( __( '<strong>Output Source:</strong> Processed Raw Source', 'gistpress' ), $shortcode_hash );
-			} elseif ( $this->unknown() == $html ) {
-				$this->debug_log( '<strong style="color: #e00">' . __( 'Remote call and transient failed and fallback was empty.', 'gistpress' ) . '</strong>', $shortcode_hash );
+			} elseif ( $this->unknown() === $html ) {
+				$this->debug_log( '<strong style="color: #e00;">' . __( 'Remote call and transient failed and fallback was empty.', 'gistpress' ) . '</strong>', $shortcode_hash );
 			}
 
 			// Cache the processed HTML.
@@ -420,8 +412,8 @@ class GistPress {
 		$this->debug_log( '<strong>' . __( 'Raw Key (Transient & Post Meta):', 'gistpress' ) . '</strong> ' . $raw_key, $shortcode_hash );
 		$this->debug_log( '<strong>' . __( 'Processed Output Key (Transient):', 'gistpress' ) . '</strong> ' . $transient_key, $shortcode_hash );
 
-		// Strip unneccessary elements from HTML output
-		$html = preg_replace('/^<!DOCTYPE.+?>/i', '', str_ireplace( array('<html>', '</html>', '<body>', '</body>'), '', $html));
+		// Strip unnecessary elements from HTML output.
+		$html = preg_replace( '/^<!DOCTYPE.+?>/i', '', str_ireplace( array( '<html>', '</html>', '<body>', '</body>' ), '', $html ) );
 
 		return $html;
 	}
@@ -432,14 +424,13 @@ class GistPress {
 	 * @since 1.1.0
 	 *
 	 * @param string $url Gist JSON endpoint.
-	 *
 	 * @return object|bool Gist JSON object, or false if anything except a HTTP
 	 *                     Status code of 200 was received.
 	 */
 	public function fetch_gist( $url ) {
 		$response = wp_remote_get( $url, array( 'sslverify' => false ) );
 
-		if ( '200' == wp_remote_retrieve_response_code( $response ) ) {
+		if ( 200 === wp_remote_retrieve_response_code( $response ) ) {
 			return json_decode( wp_remote_retrieve_body( $response ) );
 		}
 
@@ -454,7 +445,6 @@ class GistPress {
 	 *
 	 * @param string $html HTML from the Gist's JSON endpoint.
 	 * @param array  $args List of shortcode attributes.
-	 *
 	 * @return string Modified HTML.
 	 */
 	public function process_gist_html( $html, array $args ) {
@@ -475,7 +465,6 @@ class GistPress {
 		$dom = new DOMDocument();
 		$dom->loadHTML( $html );
 
-		// @todo Make this more unique?
 		$lines = $dom->getElementsByTagName( 'tr' );
 
 		if ( ! empty( $args['highlight'] ) ) {
@@ -519,7 +508,7 @@ class GistPress {
 			 * @param array $classes List of HTML class values.
 			 */
 			$classes = apply_filters( 'gistpress_line_classes', $classes );
-			$class = ( ! empty( $classes ) && is_array( $classes ) ) ? implode ( ' ', $classes ) : '';
+			$class = ( ! empty( $classes ) && is_array( $classes ) ) ? implode( ' ', $classes ) : '';
 
 			$value = $line->getAttribute( 'class' );
 			$value = empty( $value ) ? $class : $value . ' ' . $class;
@@ -552,7 +541,6 @@ class GistPress {
 	 * @param string $html  HTML from the Gist's JSON endpoint.
 	 * @param array  $range Array of min and max values.
 	 * @param int    $start Optional. Line number to start counting at.
-	 *
 	 * @return string Modified HTML.
 	 */
 	public function process_gist_line_numbers( $html, array $range, $start = null ) {
@@ -595,7 +583,7 @@ class GistPress {
 		$keys = get_post_custom_keys( $post_id );
 
 		if ( $keys ) {
-			foreach( $keys as $key ) {
+			foreach ( $keys as $key ) {
 				if ( 0 === strpos( $key, '_gist_raw_' ) ) {
 					delete_transient( $key );
 				}
@@ -609,13 +597,12 @@ class GistPress {
 	 * @since 1.1.1
 	 *
 	 * @param array $rawattr Raw attributes => values.
-	 *
 	 * @return string Gist shortcode.
 	 */
 	protected function rebuild_shortcode( array $rawattr ) {
 		$attrs = array();
 		foreach ( $rawattr as $key => $value ) {
-			if ( 'oembed' != $key ) {
+			if ( 'oembed' !== $key ) {
 				$attrs[] = $key . '="' . $value . '"';
 			}
 		}
@@ -628,7 +615,6 @@ class GistPress {
 	 * @since 1.1.1
 	 *
 	 * @param array $rawattr Associative array of raw attributes => values.
-	 *
 	 * @return array Standardized and sanitized shortcode attributes.
 	 */
 	protected function standardize_attributes( array $rawattr ) {
@@ -689,7 +675,7 @@ class GistPress {
 				'lines_start'       => '',
 				'show_line_numbers' => true,
 				'show_meta'         => true,
-				'oembed'            => 0, // Private use only
+				'oembed'            => 0, // Private use only.
 			)
 		);
 
@@ -725,7 +711,6 @@ class GistPress {
 	 * @param  string $sanitized_filename Sanitized filename, such as foo-bar-php.
 	 * @param  string $delimiter          Either underscore or hyphen.
 	 * @param  string $id                 Gist ID.
-	 *
 	 * @return string                     Filename, or empty string if it couldn't be determined.
 	 */
 	protected function get_file_name( $sanitized_filename, $delimiter, $id ) {
@@ -776,8 +761,6 @@ class GistPress {
 	 *
 	 * @param string $message A message to log for the current shortcode.
 	 * @param mixed  $id      Optional. An ID under which the message should be grouped.
-	 *
-	 * @todo Handle missing $id any better?
 	 */
 	protected function debug_log( $message, $id = null ) {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && isset( $this->logger ) ) {
@@ -793,7 +776,6 @@ class GistPress {
 	 *
 	 * @param string $tag  Shortcode tag, used as hash prefix.
 	 * @param array  $args Associative array of shortcode attributes.
-	 *
 	 * @return string md5 hash as a 32-character hexadecimal number.
 	 */
 	protected function shortcode_hash( $tag, array $args ) {
@@ -807,7 +789,6 @@ class GistPress {
 	 * @since 1.1.0
 	 *
 	 * @param string $identifier The identifier part of the key.
-	 *
 	 * @return string Transient key name.
 	 */
 	protected function transient_key( $identifier ) {
@@ -819,8 +800,7 @@ class GistPress {
 	 *
 	 * @since 2.1.0
 	 *
-	 * @param string $id The Gist id.
-	 *
+	 * @param string $gist_id The Gist id.
 	 * @return string Transient key name.
 	 */
 	protected function gist_files_transient_key( $gist_id ) {
