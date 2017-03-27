@@ -60,8 +60,10 @@ add_action( 'init', 'gistpress_i18n' );
  */
 function gistpress_init() {
 	global $gistpress, $gistpress_logger;
-	$gistpress->set_logger( $gistpress_logger );
-	$gistpress->run();
+	if ( $gistpress instanceof GistPress ) {
+		$gistpress->set_logger( $gistpress_logger );
+		$gistpress->run();
+	}
 }
 add_action( 'init', 'gistpress_init' );
 
