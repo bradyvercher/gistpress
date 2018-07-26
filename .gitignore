@@ -1,12 +1,5 @@
-# OSX
-.DS_Store
-.AppleDouble
-.LSOverride
-Icon
-
-# Thumbnails
-._*
-Thumbs.db
-
-# NetBeans
-nbproject/
+/vendor
+/composer.lock
+/phpunit.xml
+/phpcs.xml
+/.phpcs.xml
