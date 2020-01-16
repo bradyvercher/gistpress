@@ -2,18 +2,23 @@
 
 ## [Unreleased]
 
-* Removed `DOCTYPE`, `html` and `body` elements added with DOMDocument.
+## [v3.0.2] - 2020-01-16
+
+* Sanitized the `id` attribute passed to the `[gist]` shortcode. This fixes an XSS vulnerability that could be exploited by untrusted contributors on multi-author sites. Thanks to [@cornerpirate](https://github.com/cornerpirate) for disclosing responsibly.
+* Added an XML encoding declaration to load Gist content as UTF-8 ([#76](https://github.com/bradyvercher/gistpress/issues/76)).
+* Removed `DOCTYPE`, `html` and `body` elements added by DOMDocument.
+* Ensured the $gistpress global exists and is an instance of `GistPress` before running ([#72](https://github.com/bradyvercher/gistpress/issues/72)). Props [@robneu](https://github.com/robneu)
 * Added `.editorconfig` file.
 * Fixed some code standards.
 * Updated change log.
 * Added Issue and Pull Request templates.
 * Move screenshot into `assets-repo`.
 * Removed / updated author details.
-* Updated "Tested up to" to 4.4.2.
+* Updated "Tested up to" to 5.3.
 
 ## [v3.0.1] - 2016-02-16
 
-* Explicitly declared main instance variables as global to prevent fatal errors when using WP-CLI. [See #61](https://github.com/bradyvercher/gistpress/issues/61).
+* Explicitly declared main instance variables as global to prevent fatal errors when using WP-CLI ([#61](https://github.com/bradyvercher/gistpress/issues/61)).
 
 ## [v3.0.0] - 2015-08-11
 
@@ -106,7 +111,8 @@
 
 * Initial release.
 
-[Unreleased]: https://github.com/bradyvercher/gistpress/compare/v3.0.1...HEAD
+[Unreleased]: https://github.com/bradyvercher/gistpress/compare/v3.0.2...HEAD
+[v3.0.2]: https://github.com/bradyvercher/gistpress/compare/v3.0.1...v3.0.2
 [v3.0.1]: https://github.com/bradyvercher/gistpress/compare/v3.0.0...v3.0.1
 [v3.0.0]: https://github.com/bradyvercher/gistpress/compare/v2.0.3...v3.0.0
 [v2.0.3]: https://github.com/bradyvercher/gistpress/compare/v2.0.2...v2.0.3

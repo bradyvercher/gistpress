@@ -4,7 +4,7 @@ A WordPress plugin to easily embed Gists via oEmbed or shortcode.
 
 __Contributors:__ [Brady Vercher](https://github.com/bradyvercher), [Gary Jones](https://github.com/GaryJones)  
 __Requires:__ 4.0  
-__Tested up to:__ 4.4.2  
+__Tested up to:__ 5.3  
 __License:__ [GPL-2.0+](http://www.gnu.org/licenses/gpl-2.0.html)
 
 GitHub provides a method for embedding Gists on websites, but it requires inserting a `<script>` tag, which can become mangled or stripped from the TinyMCE editor used in WordPress. Instead, this plugin allows you to embed a Gist by simply inserting its URL into the editor for oEmbed-like support, or via a shortcode for more refined control.
