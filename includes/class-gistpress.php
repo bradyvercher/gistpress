@@ -412,9 +412,6 @@ class GistPress {
 		$this->debug_log( '<strong>' . __( 'Raw Key (Transient & Post Meta):', 'gistpress' ) . '</strong> ' . $raw_key, $shortcode_hash );
 		$this->debug_log( '<strong>' . __( 'Processed Output Key (Transient):', 'gistpress' ) . '</strong> ' . $transient_key, $shortcode_hash );
 
-		// Strip unnecessary elements from HTML output.
-		$html = preg_replace( '/^<!DOCTYPE.+?>/i', '', str_ireplace( array( '<html>', '</html>', '<body>', '</body>' ), '', $html ) );
-
 		return $html;
 	}
 
@@ -466,7 +463,7 @@ class GistPress {
 		$html = '<?xml encoding="utf-8" ?>' . $html;
 
 		$dom = new DOMDocument();
-		$dom->loadHTML( $html );
+		$dom->loadHTML( $html, LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED );
 
 		$lines = $dom->getElementsByTagName( 'tr' );
 
