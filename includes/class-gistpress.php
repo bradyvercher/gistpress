@@ -681,6 +681,7 @@ class GistPress {
 
 		// Sanitize attributes.
 		$attr = shortcode_atts( $defaults, $rawattr );
+		$attr['id']                = preg_replace( '/[^a-z0-9]+/i', '', $attr['id'] );
 		$attr['embed_stylesheet']  = $this->shortcode_bool( $attr['embed_stylesheet'] );
 		$attr['show_line_numbers'] = $this->shortcode_bool( $attr['show_line_numbers'] );
 		$attr['show_meta']         = $this->shortcode_bool( $attr['show_meta'] );
