@@ -462,6 +462,9 @@ class GistPress {
 			return $html;
 		}
 
+		// Load the HTML as UTF-8.
+		$html = '<?xml encoding="utf-8" ?>' . $html;
+
 		$dom = new DOMDocument();
 		$dom->loadHTML( $html );
 
@@ -517,6 +520,14 @@ class GistPress {
 
 		foreach ( $lines_to_remove as $line ) {
 			$line->parentNode->removeChild( $line );
+		}
+
+		// Remove the XML declaration.
+		foreach ( $dom->childNodes as $node ) {
+			if ( $node instanceof DOMProcessingInstruction ) {
+				$dom->removeChild( $node );
+				break;
+			}
 		}
 
 		$html = $dom->saveHTML();
