@@ -359,7 +359,8 @@ class GistPress {
 
 		if ( empty( $html ) ) {
 			$html = get_transient( $raw_key );
-			$transient_expire = DAY_IN_SECONDS;
+			// Filter the transient expiration duration
+			$transient_expire = apply_filters( 'gistpress_transient_expire', DAY_IN_SECONDS );
 
 			if ( $html && $this->unknown() !== $html ) {
 				$html = $this->process_gist_html( $html, $args );
@@ -394,7 +395,8 @@ class GistPress {
 				$html = $this->process_gist_html( $fallback, $args );
 
 				// Cache the fallback for an hour.
-				$transient_expire = HOUR_IN_SECONDS;
+				// Allow this value to be filterable
+				$transient_expire = apply_filters( 'gistpress_transient_expire_fallback', HOUR_IN_SECONDS );
 
 				$this->debug_log( __( '<strong>Raw Source:</strong> Post Meta Fallback', 'gistpress' ), $shortcode_hash );
 				$this->debug_log( __( '<strong>Output Source:</strong> Processed Raw Source', 'gistpress' ), $shortcode_hash );
