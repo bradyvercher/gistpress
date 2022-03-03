@@ -463,6 +463,8 @@ class GistPress {
 		$html = '<?xml encoding="utf-8" ?>' . $html;
 
 		$dom = new DOMDocument();
+		// Suppress warnings for invalid tags.
+		libxml_use_internal_errors(true);
 		$dom->loadHTML( $html, LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED );
 
 		$lines = $dom->getElementsByTagName( 'tr' );
