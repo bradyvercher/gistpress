@@ -463,6 +463,10 @@ class GistPress {
 		$html = '<?xml encoding="utf-8" ?>' . $html;
 
 		$dom = new DOMDocument();
+
+		// Temporarily suppress warnings for invalid tags.
+		$previous_libxml_use_internal_errors_value = libxml_use_internal_errors( true );
+
 		$dom->loadHTML( $html, LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED );
 
 		$lines = $dom->getElementsByTagName( 'tr' );
@@ -536,6 +540,9 @@ class GistPress {
 		) {
 			$html = $this->process_gist_line_numbers( $html, $args['lines'], $args['lines_start'] );
 		}
+
+		// Reset to previous value.
+		libxml_use_internal_errors( $previous_libxml_use_internal_errors_value );
 
 		return $html;
 	}
