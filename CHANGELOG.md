@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+* Temporarily suspend PHP Warnings on invalid tags when processing Gist HTML ([#81](https://github.com/bradyvercher/gistpress/issues/81))
+
 ## [v3.0.2] - 2020-01-16
 
 * Sanitized the `id` attribute passed to the `[gist]` shortcode. This fixes an XSS vulnerability that could be exploited by untrusted contributors on multi-author sites. Thanks to [@cornerpirate](https://github.com/cornerpirate) for disclosing responsibly.
