@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v3.0.3] - 2024-11-24
+
 * Temporarily suspend PHP Warnings on invalid tags when processing Gist HTML ([#81](https://github.com/bradyvercher/gistpress/issues/81))
 
 ## [v3.0.2] - 2020-01-16
@@ -113,7 +115,8 @@
 
 * Initial release.
 
-[Unreleased]: https://github.com/bradyvercher/gistpress/compare/v3.0.2...HEAD
+[Unreleased]: https://github.com/bradyvercher/gistpress/compare/v3.0.3...HEAD
+[v3.0.3]: https://github.com/bradyvercher/gistpress/compare/v3.0.2...v3.0.3
 [v3.0.2]: https://github.com/bradyvercher/gistpress/compare/v3.0.1...v3.0.2
 [v3.0.1]: https://github.com/bradyvercher/gistpress/compare/v3.0.0...v3.0.1
 [v3.0.0]: https://github.com/bradyvercher/gistpress/compare/v2.0.3...v3.0.0
